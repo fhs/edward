@@ -392,7 +392,6 @@ func MovedMouse(m draw.Mouse) {
 		if but != 0 {
 			switch t.what {
 			case Tag:
-				t.col.DragWin(t.w, but)
 				if t.w != nil {
 					barttext = &t.w.body
 				}
