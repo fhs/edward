@@ -33,53 +33,16 @@ func (row *Row) Init(r image.Rectangle, dis draw.Display) *Row {
 	return row
 }
 
-func (row *Row) Add(c *Column, x int) *Column {
-	r := row.r
-	var d *Column
-
-	// Work out the geometry of the column.
-	r.Min.Y = 0
-	if x < r.Min.X && len(row.col) > 0 { // Take 40% of last column unless specified
-		d = row.col[len(row.col)-1]
-		x = d.r.Min.X + 3*d.r.Dx()/5
-	}
-	// look for column we'll land on
-	var colidx int
-	for colidx, d = range row.col {
-		if x < d.r.Max.X {
-			break
-		}
-	}
+func (row *Row) Add(_ *Column, x int) *Column {
 	if len(row.col) > 0 {
-		if colidx < len(row.col) {
-			colidx++ // Place new column after d
-		}
-		r = d.r
-		if r.Dx() < 100 {
-			return nil // Refuse columns too narrow
-		}
-		row.display.ScreenImage().Draw(r, row.display.White(), nil, image.Point{})
-		r1 := r
-		r1.Max.X = min(x-row.display.ScaleSize(Border), r.Max.X-row.display.ScaleSize(50))
-		if r1.Dx() < row.display.ScaleSize(50) {
-			r1.Max.X = r1.Min.X + row.display.ScaleSize(50)
-		}
-		d.Resize(r1)
-		r1.Min.X = r1.Max.X
-		r1.Max.X = r1.Min.X + row.display.ScaleSize(Border)
-		row.display.ScreenImage().Draw(r1, row.display.Black(), nil, image.Point{})
-		r.Min.X = r1.Max.X
+		return row.col[0]
 	}
-	if c == nil {
-		c = &Column{}
-		c.Init(r, row.display)
-	} else {
-		c.Resize(r)
-	}
+
+	r := row.r
+	c := &Column{}
+	c.Init(r, row.display)
 	c.row = row
-	row.col = append(row.col, nil)
-	copy(row.col[colidx+1:], row.col[colidx:])
-	row.col[colidx] = c
+	row.col = []*Column{c}
 	clearmouse()
 	return c
 }
@@ -106,40 +69,6 @@ func (r *Row) Resize(rect image.Rectangle) {
 		}
 		c.Resize(r1)
 	}
-}
-
-func (row *Row) Close(c *Column, dofree bool) {
-	var (
-		r image.Rectangle
-		i int
-	)
-
-	for i = 0; i < len(row.col); i++ {
-		if row.col[i] == c {
-			goto Found
-		}
-	}
-	acmeerror("can't find column", nil)
-Found:
-	r = c.r
-	if dofree {
-		c.CloseAll()
-	}
-	row.col = append(row.col[:i], row.col[i+1:]...)
-	if len(row.col) == 0 {
-		row.display.ScreenImage().Draw(r, row.display.White(), nil, image.Point{})
-		return
-	}
-	if i == len(row.col) { // extend last column right
-		c = row.col[i-1]
-		r.Min.X = c.r.Min.X
-		r.Max.X = row.r.Max.X
-	} else { // extend next window left
-		c = row.col[i]
-		r.Max.X = c.r.Max.X
-	}
-	row.display.ScreenImage().Draw(r, row.display.White(), nil, image.Point{})
-	c.Resize(r)
 }
 
 func (r *Row) WhichCol(p image.Point) *Column {
@@ -337,8 +266,8 @@ func (row *Row) loadhelper(win *dumpfile.Window) error {
 	// Column for this window.
 	i := win.Column
 
-	if i > len(row.col) { // Didn't we already make sure that we have a column?
-		i = len(row.col)
+	if i >= len(row.col) { // Didn't we already make sure that we have a column?
+		i = len(row.col) - 1
 	}
 	c := row.col[i]
 	y := c.r.Min.Y + int((win.Position*float64(c.r.Dy()))/100.+0.5)

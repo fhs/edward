@@ -1419,6 +1419,8 @@ func TestXfidreadQWevent(t *testing.T) {
 }
 
 func TestXfidreadQindex(t *testing.T) {
+	t.Skip("TODO")
+
 	for _, name := range []string{
 		"empty-two-cols",
 		"example",

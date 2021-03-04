@@ -147,7 +147,7 @@ func main() {
 		if loadfile == "" || row.Load(dump, loadfile, true) != nil {
 			// Open the files from the command line, up to WindowsPerCol each
 			files := flag.Args()
-			row.Add(nil, -1) // only one row
+			row.Add(nil, -1) // only one column
 			rightmostcol := row.col[len(row.col)-1]
 			if len(files) == 0 {
 				readfile(row.col[len(row.col)-1], wdir)
