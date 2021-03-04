@@ -212,9 +212,6 @@ func startMockWaitthread(ctx context.Context) (done <-chan struct{}) {
 	warnings = nil
 	row = Row{
 		display: edwoodtest.NewDisplay(),
-		tag: Text{
-			file: NewFile(""),
-		},
 	}
 	ch := make(chan struct{})
 	go func() {

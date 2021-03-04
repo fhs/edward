@@ -4,25 +4,25 @@
 	"VarFont": "/lib/font/bit/lucsans/euro.8.font",
 	"FixedFont": "/lib/font/bit/lucm/unicode.9.font",
 	"RowTag": {
-		"Buffer": "Newcol Kill Putall Dump Exit win",
-		"Q0": 23,
-		"Q1": 27
+		"Buffer": "Newcol Kill Putall Dump Exit ",
+		"Q0": 0,
+		"Q1": 0
 	},
 	"Columns": [
 		{
 			"Position": 0,
 			"Tag": {
 				"Buffer": "New Cut Paste Snarf Sort Zerox Delcol ",
-				"Q0": 14,
-				"Q1": 19
+				"Q0": 0,
+				"Q1": 0
 			}
 		},
 		{
 			"Position": 54.296875,
 			"Tag": {
 				"Buffer": "New Cut Paste Snarf Sort Zerox Delcol ",
-				"Q0": 14,
-				"Q1": 19
+				"Q0": 0,
+				"Q1": 0
 			}
 		}
 	],

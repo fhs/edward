@@ -48,19 +48,11 @@ func MakeWindowScaffold(content *dumpfile.Content) {
 
 	row = Row{
 		display: display,
-		tag: *updateText(&Text{
-			what: Rowtag,
-			file: NewTagFile(),
-		}, &content.RowTag, display),
 	}
 
 	cols := make([]*Column, 0, len(content.Columns))
-	for _, sercol := range content.Columns {
+	for range content.Columns {
 		col := &Column{
-			tag: *updateText(&Text{
-				what: Columntag,
-				file: NewTagFile(),
-			}, &sercol.Tag, display),
 			display: display,
 			fortest: true,
 			w:       make([]*Window, 0),

@@ -5,16 +5,16 @@
 	"FixedFont": "/lib/font/bit/lucm/unicode.9.font",
 	"RowTag": {
 		"Buffer": "Newcol Kill Putall Dump Exit ",
-		"Q0": 29,
-		"Q1": 29
+		"Q0": 0,
+		"Q1": 0
 	},
 	"Columns": [
 		{
 			"Position": 0,
 			"Tag": {
 				"Buffer": "New Cut Paste Snarf Sort Zerox Delcol ",
-				"Q0": 38,
-				"Q1": 38
+				"Q0": 0,
+				"Q1": 0
 			}
 		}
 	],
@@ -52,7 +52,7 @@
 		{
 			"Type": 0,
 			"Column": 0,
-			"Position": 49.00133155792277,
+			"Position": 37,
 			"Font": "/lib/font/bit/lucsans/euro.8.font",
 			"Tag": {
 				"Buffer": "/home/gopher/go/src/edwood/testdata/ Del Snarf Get | Look Edit The first line\nThe second line\nThe third line",

@@ -13,13 +13,12 @@ import (
 	"github.com/rjkroege/edwood/internal/dumpfile"
 )
 
-const RowTag = "Newcol Kill Putall Dump Exit"
+const RowTag = "Newcol Kill Putall Dump Exit "
 
 type Row struct {
 	display draw.Display
 	lk      sync.Mutex
 	r       image.Rectangle
-	tag     Text
 	col     []*Column
 }
 
@@ -32,20 +31,10 @@ func (row *Row) Init(r image.Rectangle, dis draw.Display) *Row {
 	row.col = []*Column{}
 	row.r = r
 	r1 := r
-	r1.Max.Y = r1.Min.Y + fontget(tagfont, row.display).Height()
-	t := &row.tag
-	f := new(File)
-	t.file = f.AddText(t)
-	t.Init(r1, tagfont, tagcolors, row.display)
-	t.what = Rowtag
-	t.row = row
-	t.w = nil
-	t.col = nil
+	r1.Max.Y = r1.Min.Y
 	r1.Min.Y = r1.Max.Y
 	r1.Max.Y += row.display.ScaleSize(Border)
 	row.display.ScreenImage().Draw(r1, row.display.Black(), nil, image.Point{})
-	t.Insert(0, []rune(RowTag+" "), true)
-	t.SetSelect(t.file.Size(), t.file.Size())
 	return row
 }
 
@@ -54,7 +43,7 @@ func (row *Row) Add(c *Column, x int) *Column {
 	var d *Column
 
 	// Work out the geometry of the column.
-	r.Min.Y = row.tag.fr.Rect().Max.Y + row.display.ScaleSize(Border)
+	r.Min.Y = 0
 	if x < r.Min.X && len(row.col) > 0 { // Take 40% of last column unless specified
 		d = row.col[len(row.col)-1]
 		x = d.r.Min.X + 3*d.r.Dx()/5
@@ -93,7 +82,6 @@ func (row *Row) Add(c *Column, x int) *Column {
 		c.Resize(r)
 	}
 	c.row = row
-	c.tag.row = row
 	row.col = append(row.col, nil)
 	copy(row.col[colidx+1:], row.col[colidx:])
 	row.col[colidx] = c
@@ -105,13 +93,6 @@ func (r *Row) Resize(rect image.Rectangle) {
 	or := row.r
 	row.r = rect
 	r1 := rect
-	r1.Max.Y = r1.Min.Y + fontget(tagfont, r.display).Height()
-	row.tag.Resize(r1, true, false)
-	r1.Min.Y = r1.Max.Y
-	r1.Max.Y += row.display.ScaleSize(Border)
-	row.display.ScreenImage().Draw(r1, row.display.Black(), nil, image.Point{})
-	rect.Min.Y = r1.Max.Y
-	r1 = rect
 	r1.Max.X = r1.Min.X
 	for i := 0; i < len(row.col); i++ {
 		c := row.col[i]
@@ -250,9 +231,6 @@ func (r *Row) WhichCol(p image.Point) *Column {
 }
 
 func (r *Row) Which(p image.Point) *Text {
-	if p.In(row.tag.all) {
-		return &row.tag
-	}
 	c := row.WhichCol(p)
 	if c != nil {
 		return c.Which(p)
@@ -332,7 +310,7 @@ func (r *Row) Dump(file string) error {
 }
 
 func (r *Row) dump() (*dumpfile.Content, error) {
-	rowTag := string(r.tag.file.b)
+	rowTag := string(RowTag)
 	// Remove commands at the beginning of row tag.
 	if i := strings.Index(rowTag, RowTag); i > 1 {
 		rowTag = rowTag[i:]
@@ -343,8 +321,8 @@ func (r *Row) dump() (*dumpfile.Content, error) {
 		FixedFont:  *fixedfontflag,
 		RowTag: dumpfile.Text{
 			Buffer: rowTag,
-			Q0:     r.tag.q0,
-			Q1:     r.tag.q1,
+			Q0:     0,
+			Q1:     0,
 		},
 		Columns: make([]dumpfile.Column, len(r.col)),
 		Windows: nil,
@@ -356,9 +334,9 @@ func (r *Row) dump() (*dumpfile.Content, error) {
 		dump.Columns[i] = dumpfile.Column{
 			Position: 100.0 * float64(c.r.Min.X-row.r.Min.X) / float64(r.r.Dx()),
 			Tag: dumpfile.Text{
-				Buffer: string(c.tag.file.b),
-				Q0:     c.tag.q0,
-				Q1:     c.tag.q1,
+				Buffer: string(Lheader),
+				Q0:     0,
+				Q1:     0,
 			},
 		}
 		for _, w := range c.w {
@@ -593,21 +571,6 @@ func (row *Row) loadimpl(dump *dumpfile.Content, initing bool) error {
 		if i >= len(row.col) {
 			row.Add(nil, x)
 		}
-	}
-
-	// Set row tag
-	row.tag.Delete(0, row.tag.file.Size(), true)
-	row.tag.Insert(0, []rune(dump.RowTag.Buffer), true)
-	row.tag.Show(dump.RowTag.Q0, dump.RowTag.Q1, true)
-
-	// Set column tags
-	for i, col := range dump.Columns {
-		// Acme's handling of column headers is perplexing. It is conceivable
-		// that this code does not do the right thing even if it replicates Acme
-		// correctly.
-		row.col[i].tag.Delete(0, row.col[i].tag.file.Size(), true)
-		row.col[i].tag.Insert(0, []rune(col.Tag.Buffer), true)
-		row.col[i].tag.Show(col.Tag.Q0, col.Tag.Q1, true)
 	}
 
 	// Load the windows.

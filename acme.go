@@ -43,10 +43,8 @@ func main() {
 	runtime.GOMAXPROCS(7)
 
 	var (
-		ncol     int
 		loadfile string
 	)
-	flag.IntVar(&ncol, "c", 2, "Number of columns at startup")
 	flag.StringVar(&loadfile, "l", "", "Load state from file generated with Dump command")
 	flag.Parse()
 
@@ -149,22 +147,7 @@ func main() {
 		if loadfile == "" || row.Load(dump, loadfile, true) != nil {
 			// Open the files from the command line, up to WindowsPerCol each
 			files := flag.Args()
-			if ncol < 0 {
-				if len(files) == 0 {
-					ncol = 2
-				} else {
-					ncol = (len(files) + (WindowsPerCol - 1)) / WindowsPerCol
-					if ncol < 2 {
-						ncol = 2
-					}
-				}
-			}
-			if ncol == 0 {
-				ncol = 2
-			}
-			for i := 0; i < ncol; i++ {
-				row.Add(nil, -1)
-			}
+			row.Add(nil, -1) // only one row
 			rightmostcol := row.col[len(row.col)-1]
 			if len(files) == 0 {
 				readfile(row.col[len(row.col)-1], wdir)
@@ -564,16 +547,10 @@ func waitthread(ctx context.Context) {
 				}
 			}
 			row.lk.Lock()
-			t := &row.tag
-			t.Commit()
 			if c == nil {
 				// command exited before we had a chance to add it to command list
 				exited[pid] = w
 			} else {
-				if search(t, []rune(c.name)) {
-					t.Delete(t.q0, t.q1, true)
-					t.SetSelect(0, 0)
-				}
 				if !w.Success() {
 					warning(c.md, "%s: %s\n", c.name, w.String())
 				}
@@ -594,10 +571,6 @@ func waitthread(ctx context.Context) {
 			}
 			command = append(command, c)
 			row.lk.Lock()
-			t := &row.tag
-			t.Commit()
-			t.Insert(0, []rune(c.name), true)
-			t.SetSelect(0, 0)
 			row.display.Flush()
 			row.lk.Unlock()
 		}

@@ -2,7 +2,6 @@ package main
 
 import (
 	"image"
-	"sort"
 
 	"github.com/rjkroege/edwood/internal/draw"
 	"github.com/rjkroege/edwood/internal/frame"
@@ -16,7 +15,6 @@ type Column struct {
 	display draw.Display
 	Border  int
 	r       image.Rectangle
-	tag     Text
 	row     *Row
 	w       []*Window // These are sorted from top to bottom (increasing Y)
 	safe    bool
@@ -45,27 +43,14 @@ func (c *Column) Init(r image.Rectangle, dis draw.Display) *Column {
 		c.Border = c.display.ScaleSize(Border)
 	}
 	c.r = r
-	c.tag.col = c
 	r1 := r
-	r1.Max.Y = r1.Min.Y + fontget(tagfont, c.display).Height()
+	r1.Max.Y = r1.Min.Y
 
 	// TODO(rjk) better code: making tag should be split out.
-	tagfile := NewFile("")
-	c.tag.file = tagfile.AddText(&c.tag)
-	c.tag.Init(r1, tagfont, tagcolors, c.display)
-	c.tag.what = Columntag
 	r1.Min.Y = r1.Max.Y
 	r1.Max.Y += c.display.ScaleSize(Border)
 	if c.display != nil {
 		c.display.ScreenImage().Draw(r1, c.display.Black(), nil, image.Point{})
-	}
-	c.tag.Insert(0, Lheader, true)
-	c.tag.SetSelect(c.tag.file.Size(), c.tag.file.Size())
-	if c.display != nil {
-		c.display.ScreenImage().Draw(c.tag.scrollr, colbutton, nil, colbutton.R().Min)
-		// As a general practice, Edwood is very over-eager to Flush. Flushes hurt
-		// perf.
-		c.display.Flush()
 	}
 	c.safe = true
 	return c
@@ -100,7 +85,7 @@ func (c *Column) Add(w, clone *Window, y int) *Window {
 	var v *Window
 
 	r := c.r
-	r.Min.Y = c.tag.fr.Rect().Max.Y + c.display.ScaleSize(Border)
+	r.Min.Y = 0
 	if y < r.Min.Y && c.nw() > 0 { // Steal half the last window
 		v = c.w[c.nw()-1]
 		y = v.body.fr.Rect().Min.Y + v.body.fr.Rect().Dx()/2
@@ -265,7 +250,6 @@ func (c *Column) CloseAll() {
 	if c == activecol {
 		activecol = nil
 	}
-	c.tag.Close()
 	for _, w := range c.w {
 		w.Close()
 	}
@@ -273,23 +257,11 @@ func (c *Column) CloseAll() {
 }
 
 func (c *Column) MouseBut() {
-	if c.display != nil {
-		c.display.MoveTo(c.tag.scrollr.Min.Add(c.tag.scrollr.Max).Div(2))
-	}
 }
 
 func (c *Column) Resize(r image.Rectangle) {
 	clearmouse()
 	r1 := r
-	r1.Max.Y = r1.Min.Y + c.tag.fr.DefaultFontHeight()
-	c.tag.Resize(r1, true, false)
-	if c.display != nil {
-		c.display.ScreenImage().Draw(c.tag.scrollr, colbutton, nil, colbutton.R().Min)
-	}
-	r1.Min.Y = r1.Max.Y
-	r1.Max.Y += c.display.ScaleSize(Border)
-	c.display.ScreenImage().Draw(r1, c.display.Black(), nil, image.Point{})
-	r1.Max.Y = r.Max.Y
 	for i := 0; i < c.nw(); i++ {
 		w := c.w[i]
 		w.maxlines = 0
@@ -301,7 +273,7 @@ func (c *Column) Resize(r image.Rectangle) {
 				r1.Max.Y += (w.r.Dy() + c.display.ScaleSize(Border)) * r.Dy() / c.r.Dy()
 			}
 		}
-		r1.Max.Y = max(r1.Max.Y, r1.Min.Y+c.display.ScaleSize(Border)+fontget(tagfont, c.display).Height())
+		r1.Max.Y = max(r1.Max.Y, r1.Min.Y)
 		r2 := r1
 		r2.Max.Y = r2.Min.Y + c.display.ScaleSize(Border)
 		c.display.ScreenImage().Draw(r2, c.display.Black(), nil, image.Point{})
@@ -312,26 +284,6 @@ func (c *Column) Resize(r image.Rectangle) {
 }
 
 func (c *Column) Sort() {
-	sort.Slice(c.w, func(i, j int) bool { return c.w[i].body.file.name < c.w[j].body.file.name })
-
-	r := c.r
-	r.Min.Y = c.tag.fr.Rect().Max.Y
-	c.display.ScreenImage().Draw(r, textcolors[frame.ColBack], nil, image.Point{})
-	y := r.Min.Y
-	for i := 0; i < len(c.w); i++ {
-		w := c.w[i]
-		r.Min.Y = y
-		if i == len(c.w)-1 {
-			r.Max.Y = c.r.Max.Y
-		} else {
-			r.Max.Y = r.Min.Y + w.r.Dy() + c.display.ScaleSize(Border)
-		}
-		r1 := r
-		r1.Max.Y = r1.Min.Y + c.display.ScaleSize(Border)
-		c.display.ScreenImage().Draw(r1, c.display.Black(), nil, image.Point{})
-		r.Min.Y = r1.Max.Y
-		y = w.Resize(r, false, i == len(c.w)-1)
-	}
 }
 
 // Grow Window w with a mode determined by mouse button but.
@@ -597,9 +549,6 @@ Found:
 func (c *Column) Which(p image.Point) *Text {
 	if !p.In(c.r) {
 		return nil
-	}
-	if p.In(c.tag.all) {
-		return &c.tag
 	}
 	for _, w := range c.w {
 		if p.In(w.r) {

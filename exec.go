@@ -31,7 +31,6 @@ var exectab = []Exectab{
 	//	{ "Abort",		doabort,	false,	true /*unused*/,		true /*unused*/,		},
 	{"Cut", cut, true, true, true},
 	{"Del", del, false, false, true /*unused*/},
-	{"Delcol", delcol, false, true /*unused*/, true /*unused*/},
 	{"Delete", del, false, true, true /*unused*/},
 	{"Dump", dump, false, true, true /*unused*/},
 	{"Edit", edit, false, true /*unused*/, true /*unused*/},
@@ -46,7 +45,6 @@ var exectab = []Exectab{
 	{"Local", local, false, true /*unused*/, true /*unused*/},
 	{"Look", look, false, true /*unused*/, true /*unused*/},
 	{"New", newx, false, true /*unused*/, true /*unused*/},
-	{"Newcol", newcol, false, true /*unused*/, true /*unused*/},
 	{"Paste", paste, true, true, true /*unused*/},
 	{"Put", put, false, true /*unused*/, true /*unused*/},
 	{"Putall", putall, false, true /*unused*/, true /*unused*/},
@@ -324,30 +322,6 @@ func cut(et *Text, t *Text, _ *Text, dosnarf bool, docut bool, _ string) {
 			argtext = t
 		}
 	}
-}
-
-func newcol(et *Text, _ *Text, _ *Text, _, _ bool, _ string) {
-	c := et.row.Add(nil, -1)
-	if c != nil {
-		w := c.Add(nil, nil, -1)
-		w.SetTag()
-		xfidlog(w, "new")
-	}
-}
-
-func delcol(et *Text, _ *Text, _ *Text, _, _ bool, _ string) {
-	c := et.col
-	if c == nil || !c.Clean() {
-		return
-	}
-	for i := 0; i < len(c.w); i++ {
-		w := c.w[i]
-		if w.nopen[QWevent]+w.nopen[QWaddr]+w.nopen[QWdata]+w.nopen[QWxdata] > 0 {
-			warning(nil, "can't delete column; %s is running an external command\n", w.body.file.name)
-			return
-		}
-	}
-	et.col.row.Close(c, true)
 }
 
 func paste(et *Text, t *Text, _ *Text, selectall bool, tobody bool, _ string) {
