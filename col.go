@@ -43,15 +43,6 @@ func (c *Column) Init(r image.Rectangle, dis draw.Display) *Column {
 		c.Border = c.display.ScaleSize(Border)
 	}
 	c.r = r
-	r1 := r
-	r1.Max.Y = r1.Min.Y
-
-	// TODO(rjk) better code: making tag should be split out.
-	r1.Min.Y = r1.Max.Y
-	r1.Max.Y += c.display.ScaleSize(Border)
-	if c.display != nil {
-		c.display.ScreenImage().Draw(r1, c.display.Black(), nil, image.Point{})
-	}
 	c.safe = true
 	return c
 }

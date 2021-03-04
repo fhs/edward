@@ -391,8 +391,6 @@ func MovedMouse(m draw.Mouse) {
 	if m.Point.In(t.scrollr) {
 		if but != 0 {
 			switch t.what {
-			case Columntag:
-				row.DragCol(t.col, but)
 			case Tag:
 				t.col.DragWin(t.w, but)
 				if t.w != nil {

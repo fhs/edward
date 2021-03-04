@@ -30,11 +30,6 @@ func (row *Row) Init(r image.Rectangle, dis draw.Display) *Row {
 	row.display.ScreenImage().Draw(r, row.display.White(), nil, image.Point{})
 	row.col = []*Column{}
 	row.r = r
-	r1 := r
-	r1.Max.Y = r1.Min.Y
-	r1.Min.Y = r1.Max.Y
-	r1.Max.Y += row.display.ScaleSize(Border)
-	row.display.ScreenImage().Draw(r1, row.display.Black(), nil, image.Point{})
 	return row
 }
 
@@ -111,79 +106,6 @@ func (r *Row) Resize(rect image.Rectangle) {
 		}
 		c.Resize(r1)
 	}
-}
-
-func (row *Row) DragCol(c *Column, _ int) {
-	var (
-		r       image.Rectangle
-		i, b, x int
-		p, op   image.Point
-		d       *Column
-	)
-	clearmouse()
-	row.display.SetCursor(&boxcursor)
-	b = mouse.Buttons
-	op = mouse.Point
-	for mouse.Buttons == b {
-		mousectl.Read()
-	}
-	row.display.SetCursor(nil)
-	if mouse.Buttons != 0 {
-		for mouse.Buttons != 0 {
-			mousectl.Read()
-		}
-		return
-	}
-
-	for i = 0; i < len(row.col); i++ {
-		if row.col[i] == c {
-			goto Found
-		}
-	}
-	acmeerror("can't find column", nil)
-
-Found:
-	p = mouse.Point
-	if abs(p.X-op.X) < 5 && abs(p.Y-op.Y) < 5 {
-		return
-	}
-	if (i > 0 && p.X < row.col[i-1].r.Min.X) || (i < len(row.col)-1 && p.X > c.r.Max.X) {
-		// shuffle
-		x = c.r.Min.X
-		row.Close(c, false)
-		if (row.Add(c, p.X) == nil) && // whoops!
-			(row.Add(c, x) == nil) && // WHOOPS!
-			(row.Add(c, -1) == nil) { // shit!
-			row.Close(c, true)
-			return
-		}
-		c.MouseBut()
-		return
-	}
-	if i == 0 {
-		return
-	}
-	d = row.col[i-1]
-	if p.X < d.r.Min.X+row.display.ScaleSize(80+Scrollwid) {
-		p.X = d.r.Min.X + row.display.ScaleSize(80+Scrollwid)
-	}
-	if p.X > c.r.Max.X-row.display.ScaleSize(80-Scrollwid) {
-		p.X = c.r.Max.X - row.display.ScaleSize(80-Scrollwid)
-	}
-	r = d.r
-	r.Max.X = c.r.Max.X
-	row.display.ScreenImage().Draw(r, row.display.White(), nil, image.Point{})
-	r.Max.X = p.X
-	d.Resize(r)
-	r = c.r
-	r.Min.X = p.X
-	r.Max.X = r.Min.X
-	r.Max.X += row.display.ScaleSize(Border)
-	row.display.ScreenImage().Draw(r, row.display.Black(), nil, image.Point{})
-	r.Min.X = r.Max.X
-	r.Max.X = c.r.Max.X
-	c.Resize(r)
-	c.MouseBut()
 }
 
 func (row *Row) Close(c *Column, dofree bool) {
