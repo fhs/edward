@@ -48,14 +48,6 @@ func (c *Column) Init(r image.Rectangle, dis draw.Display) *Column {
 	return c
 }
 
-// TODO(rjk): Remove the dead code.
-/*
-func (c *Column) AddFile(f *File) *Window {
-	w := NewWindow(f)
-	c.Add(w, nil, 0)
-}
-*/
-
 // findWindowContainingY finds the window containing vertical offset y
 // and returns the Window and its index.
 // TODO(rjk): It's almost certain that we repeat this code somewhere else.
@@ -190,9 +182,6 @@ func (c *Column) Resize(r image.Rectangle) {
 		r1.Min.Y = w.Resize(r1, false, i == c.nw()-1)
 	}
 	c.r = r
-}
-
-func (c *Column) Sort() {
 }
 
 func (c *Column) Which(p image.Point) *Text {

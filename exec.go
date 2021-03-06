@@ -51,7 +51,6 @@ var exectab = []Exectab{
 	{"Redo", undo, false, false, true /*unused*/},
 	{"Send", sendx, true, true /*unused*/, true /*unused*/},
 	{"Snarf", cut, false, true, false},
-	{"Sort", sortx, false, true /*unused*/, true /*unused*/},
 	{"Tab", tab, false, true /*unused*/, true /*unused*/},
 	{"Tabexpand", expandtab, false, true /*unused*/, true /*unused*/},
 	{"Undo", undo, false, true, true /*unused*/},
@@ -562,12 +561,6 @@ func putall(et, _, _ *Text, _, _ bool, arg string) {
 				}
 			}
 		}
-	}
-}
-
-func sortx(et, _, _ *Text, _, _ bool, _ string) {
-	if et.col != nil {
-		et.col.Sort()
 	}
 }
 
