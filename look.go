@@ -576,9 +576,6 @@ func openfile(t *Text, e *Expand) *Window {
 	}
 	if w != nil {
 		t = &w.body
-		if !t.col.safe && t.fr.GetFrameFillStatus().Maxlines == 0 { // window is obscured by full-column window
-			t.col.Grow(t.col.w[0], 1)
-		}
 	} else {
 		ow = nil
 		if t != nil {

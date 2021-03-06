@@ -1201,9 +1201,6 @@ func (t *Text) Show(q0, q1 int, doselect bool) {
 		}
 		return
 	}
-	if t.w != nil && t.fr.GetFrameFillStatus().Maxlines == 0 {
-		t.col.Grow(t.w, 1)
-	}
 	if doselect {
 		t.SetSelect(q0, q1)
 	}

@@ -752,8 +752,6 @@ func fontx(et *Text, _ *Text, argt *Text, _, _ bool, arg string) {
 				t.w.widths[i] = newfont.StringWidth(dir)
 			}
 		}
-		// avoid shrinking of window due to quantization
-		t.w.col.Grow(t.w, -1)
 	}
 }
 

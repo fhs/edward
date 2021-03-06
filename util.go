@@ -240,9 +240,6 @@ func makenewwindow(t *Text) *Window {
 		y = (bigw.r.Min.Y + bigw.r.Max.Y) / 2
 	}
 	w = c.Add(nil, nil, y)
-	if w.body.fr.GetFrameFillStatus().Maxlines < 2 {
-		w.col.Grow(w, 1)
-	}
 	return w
 }
 

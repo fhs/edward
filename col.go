@@ -2,6 +2,7 @@ package main
 
 import (
 	"image"
+	"log"
 
 	"github.com/rjkroege/edwood/internal/draw"
 	"github.com/rjkroege/edwood/internal/frame"
@@ -72,84 +73,13 @@ func (c *Column) findWindowContainingY(y int) (i int, v *Window) {
 // Add adds a window to the Column.
 // TODO(rjk): what are the args?
 func (c *Column) Add(w, clone *Window, y int) *Window {
-	// Figure out new window placement
-	var v *Window
+	if len(c.w) > 0 {
+		log.Panicf("can't create more than one window in column")
+	}
 
 	r := c.r
 	r.Min.Y = 0
-	if y < r.Min.Y && c.nw() > 0 { // Steal half the last window
-		v = c.w[c.nw()-1]
-		y = v.body.fr.Rect().Min.Y + v.body.fr.Rect().Dx()/2
-	}
 
-	// Which window will we land on?
-	var windex int
-	windex, v = c.findWindowContainingY(y)
-
-	// TODO(rjk): be polite. :-)
-	buggered := false // historical variable name
-	if c.nw() > 0 {
-		if windex < c.nw() {
-			windex++
-		}
-
-		// if landing window (v) is too small, grow it first (landing window
-		// will be split to accommodate the newly added window.)
-		// minht is the height of the first line of the tag and the border thickness
-		// TODO(rjk): Make minht a method of the tag to simplify variable height fonts.
-		minht := v.tag.fr.DefaultFontHeight() + c.display.ScaleSize(Border) + 1
-		j := 0
-		// Code inspection suggests that the frame fill status may have altered
-		// after resizing.
-		for !c.safe || v.body.fr.GetFrameFillStatus().Maxlines < 3 || v.body.all.Dy() <= minht {
-			j++
-			if j > 10 {
-				buggered = true // Too many windows in column
-				break
-			}
-			c.Grow(v, 1)
-		}
-
-		// figure out where to split v to make room for w
-		// new window stops where next window begins
-		var ymax int
-		if windex < c.nw() {
-			ymax = c.w[windex].r.Min.Y - c.display.ScaleSize(Border)
-		} else {
-			ymax = c.r.Max.Y
-		}
-
-		// new window must start after v's tag ends
-		y = max(y, v.tagtop.Max.Y+c.display.ScaleSize(Border))
-
-		// new window must start early enough to end before ymax
-		y = min(y, ymax-minht)
-
-		// if y is too small, too many windows in column
-		if y < v.tagtop.Max.Y+c.display.ScaleSize(Border) {
-			buggered = true
-		}
-
-		// Resize & redraw v
-		r = v.r
-		r.Max.Y = ymax
-		if c.display != nil {
-			c.display.ScreenImage().Draw(r, textcolors[frame.ColBack], nil, image.Point{})
-		}
-		r1 := r
-		y = min(y, ymax-(v.tag.fr.DefaultFontHeight()*v.taglines+v.body.fr.DefaultFontHeight()+c.display.ScaleSize(Border)+1))
-		ffs := v.body.fr.GetFrameFillStatus()
-		r1.Max.Y = min(y, v.body.fr.Rect().Min.Y+ffs.Nlines*v.body.fr.DefaultFontHeight())
-		r1.Min.Y = v.Resize(r1, false, false)
-		r1.Max.Y = r1.Min.Y + c.display.ScaleSize(Border)
-		if c.display != nil {
-			c.display.ScreenImage().Draw(r1, c.display.Black(), nil, image.Point{})
-		}
-		//
-		// leave r with w's coordinates
-		//
-		r.Min.Y = r1.Max.Y
-	}
 	if w == nil {
 		w = NewWindow()
 		w.col = c
@@ -165,13 +95,8 @@ func (c *Column) Add(w, clone *Window, y int) *Window {
 	w.tag.row = c.row
 	w.body.col = c
 	w.body.row = c.row
-	c.w = append(c.w, nil)
-	copy(c.w[windex+1:], c.w[windex:])
-	c.w[windex] = w
+	c.w = append(c.w, w)
 	c.safe = true
-	if buggered {
-		c.Resize(c.r)
-	}
 	savemouse(w)
 	if c.display != nil {
 		c.display.MoveTo(w.tag.scrollr.Max.Add(image.Pt(3, 3)))
@@ -187,9 +112,6 @@ func (c *Column) Close(w *Window, dofree bool) {
 		didmouse, up bool
 	)
 	// w is locked
-	if !c.safe && !c.fortest {
-		c.Grow(w, 1)
-	}
 	for i = 0; i < len(c.w); i++ {
 		if c.w[i] == w {
 			goto Found
@@ -271,172 +193,6 @@ func (c *Column) Resize(r image.Rectangle) {
 }
 
 func (c *Column) Sort() {
-}
-
-// Grow Window w with a mode determined by mouse button but.
-func (c *Column) Grow(w *Window, but int) {
-	//var nl, ny *int
-
-	var windex int
-
-	for windex = 0; windex < len(c.w); windex++ {
-		if c.w[windex] == w {
-			break
-		}
-	}
-	if windex == len(c.w) {
-		acmeerror("can't find window", nil)
-	}
-
-	cr := c.r
-	if but < 0 { // make sure window fills its own space properly
-		r := w.r
-		if windex == c.nw()-1 || !c.safe { // Last window in column
-			r.Max.Y = cr.Max.Y // Clamp to column bottom.
-		} else {
-			// Fill space down to the next window.
-			r.Max.Y = c.w[windex+1].r.Min.Y - c.display.ScaleSize(Border)
-		}
-		w.Resize(r, false, true)
-		return
-	}
-	cr.Min.Y = c.w[0].r.Min.Y
-	if but == 3 { // Switch to full size window
-		if windex != 0 {
-			v := c.w[0]
-			c.w[0] = w
-			c.w[windex] = v
-		}
-		c.display.ScreenImage().Draw(cr, textcolors[frame.ColBack], nil, image.Point{})
-		w.Resize(cr, false, true)
-		for i := 1; i < c.nw(); i++ {
-			ffs := c.w[i].body.fr.GetFrameFillStatus()
-			ffs.Maxlines = 0
-		}
-		c.safe = false
-		return
-	}
-
-	// Observation: before I can support lines of arbitrary height, I need to change
-	// Frame to paint partial lines of text.
-	// TODO(rjk): Rewrite this logic for computing heights when font heights vary.
-	// store old #lines for each window
-	onl := w.body.fr.GetFrameFillStatus().Maxlines
-	nl := make([]int, c.nw())
-	tot := 0
-	for j := 0; j < c.nw(); j++ {
-		l := c.w[j].taglines - 1 + c.w[j].body.fr.GetFrameFillStatus().Maxlines // TODO(flux): This taglines subtraction (for scrolling tags) assumes tags take the same number of pixels height as the body lines.  This is clearly false.
-		nl[j] = l
-		tot += l
-	}
-
-	// approximate new #lines for this window
-	if but == 2 { // as big as can be
-		for i := range nl {
-			nl[i] = 0
-		}
-		goto Pack
-	}
-	{ // Scope for nnl & dln
-		nnl := min(onl+max(min(5, w.taglines-1+w.maxlines), onl/2), tot) // TODO(flux) more bad taglines use
-		if nnl < w.taglines-1+w.maxlines {
-			nnl = (w.taglines - 1 + w.maxlines + nnl) / 2
-		}
-		if nnl == 0 {
-			nnl = 2
-		}
-		dnl := nnl - onl
-		// compute new #lines for each window
-		for k := 1; k < c.nw(); k++ {
-			// prune from later window
-			j := windex + k
-			if j < c.nw() && nl[j] != 0 {
-				l := min(dnl, max(1, nl[j]/2))
-				nl[j] -= l
-				nl[windex] += l
-				dnl -= l
-			}
-			// prune from earlier window
-			j = windex - k
-			if j >= 0 && nl[j] != 0 {
-				l := min(dnl, max(1, nl[j]/2))
-				nl[j] -= l
-				nl[windex] += l
-				dnl -= l
-			}
-		}
-	}
-Pack:
-	ny := make([]int, c.nw())
-	// pack everyone above
-	y1 := cr.Min.Y
-	var v *Window
-
-	// Resize windows [0, target window)
-	for j := 0; j < windex; j++ {
-		v = c.w[j]
-		r := v.r
-		r.Min.Y = y1
-		r.Max.Y = y1 + v.tagtop.Dy()
-		if nl[j] != 0 {
-			r.Max.Y += 1 + nl[j]*v.body.fr.DefaultFontHeight()
-		}
-		r.Min.Y = v.Resize(r, false, false)
-		r.Max.Y += c.display.ScaleSize(Border)
-		c.display.ScreenImage().Draw(r, c.display.Black(), nil, image.Point{})
-		y1 = r.Max.Y
-	}
-	// scan to see new size of everyone below
-	y2 := c.r.Max.Y
-	for j := c.nw() - 1; j > windex; j-- {
-		v = c.w[j]
-		r := v.r
-		r.Min.Y = y2 - v.tagtop.Dy()
-		if nl[j] != 0 {
-			r.Min.Y -= 1 + nl[j]*v.body.fr.DefaultFontHeight()
-		}
-		r.Min.Y -= c.display.ScaleSize(Border)
-		ny[j] = r.Min.Y
-		y2 = r.Min.Y
-	}
-	// compute new size of window
-	r := w.r
-	r.Min.Y = y1
-	r.Max.Y = y2
-	h := w.body.fr.DefaultFontHeight() // TODO(flux) Is this the right frame font height to use?
-	if r.Dy() < w.tagtop.Dy()+1+h+c.display.ScaleSize(Border) {
-		r.Max.Y = r.Min.Y + w.tagtop.Dy() + 1 + h + c.display.ScaleSize(Border)
-	}
-	// draw window
-	r.Max.Y = w.Resize(r, false, true)
-	if windex < c.nw()-1 {
-		r.Min.Y = r.Max.Y
-		r.Max.Y += c.display.ScaleSize(Border)
-		c.display.ScreenImage().Draw(r, c.display.Black(), nil, image.Point{})
-		for j := windex + 1; j < c.nw(); j++ {
-			ny[j] -= (y2 - r.Max.Y)
-		}
-	}
-	// pack everyone below
-	y1 = r.Max.Y
-	for j := windex + 1; j < c.nw(); j++ {
-		v = c.w[j]
-		r = v.r
-		r.Min.Y = y1
-		r.Max.Y = y1 + v.tagtop.Dy()
-		if nl[j] != 0 {
-			r.Max.Y += 1 + nl[j]*v.body.fr.DefaultFontHeight()
-		}
-		y1 = v.Resize(r, false, j == c.nw()-1)
-		if j < c.nw()-1 { // no border on last window
-			r.Min.Y = y1
-			r.Max.Y += c.display.ScaleSize(Border)
-			c.display.ScreenImage().Draw(r, c.display.Black(), nil, image.Point{})
-			y1 = r.Max.Y
-		}
-	}
-	c.safe = true
-	w.MouseBut()
 }
 
 func (c *Column) Which(p image.Point) *Text {
