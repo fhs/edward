@@ -641,16 +641,17 @@ func (w errorWriter) Close() error {
 
 const MAXSNARF = 100 * 1024
 
-func acmeputsnarf() {
-	r := make([]rune, snarfbuf.nc())
-	snarfbuf.Read(0, r[:snarfbuf.nc()])
-	row.display.WriteSnarf([]byte(string(r)))
+func acmeputsnarf(display draw.Display, snarf Buffer) {
+	r := make([]rune, snarf.nc())
+	snarf.Read(0, r[:snarf.nc()])
+	display.WriteSnarf([]byte(string(r)))
 }
 
-func acmegetsnarf() {
+func acmegetsnarf(display draw.Display) Buffer {
 	b := make([]byte, MAXSNARF)
-	n, _, _ := row.display.ReadSnarf(b)
+	n, _, _ := display.ReadSnarf(b)
 	r, _, _ := cvttorunes(b, n)
-	snarfbuf.Reset()
-	snarfbuf.Insert(0, r)
+	snarf := NewBuffer()
+	snarf.Insert(0, r)
+	return snarf
 }

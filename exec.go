@@ -295,7 +295,7 @@ func cut(et *Text, t *Text, _ *Text, dosnarf bool, docut bool, _ string) {
 	if dosnarf {
 		q0 = t.q0
 		q1 = t.q1
-		snarfbuf.Delete(0, snarfbuf.nc())
+		snarfbuf := NewBuffer()
 		r := make([]rune, RBUFSIZE)
 		for q0 < q1 {
 			n = q1 - q0
@@ -306,7 +306,7 @@ func cut(et *Text, t *Text, _ *Text, dosnarf bool, docut bool, _ string) {
 			snarfbuf.Insert(snarfbuf.nc(), r[:n])
 			q0 += n
 		}
-		acmeputsnarf()
+		acmeputsnarf(t.w.display, snarfbuf)
 	}
 	if docut {
 		t.Delete(t.q0, t.q1, true)
@@ -338,8 +338,8 @@ func paste(et *Text, t *Text, _ *Text, selectall bool, tobody bool, _ string) {
 		return
 	}
 
-	acmegetsnarf()
-	if t == nil || snarfbuf.nc() == 0 {
+	snarfbuf := acmegetsnarf(t.w.display)
+	if snarfbuf.nc() == 0 {
 		return
 	}
 	if t.w != nil && et.w != t.w {
