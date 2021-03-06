@@ -88,7 +88,7 @@ func (t *Text) ScrDraw(nchars int) {
 		b.Draw(r2, textcolors[frame.ColBack], nil, image.Point{})
 		r2.Min.X = r2.Max.X - 1
 		b.Draw(r2, textcolors[frame.ColBord], nil, image.Point{})
-		row.display.ScreenImage().Draw(r, b, nil, image.Pt(0, r1.Min.Y))
+		t.w.display.ScreenImage().Draw(r, b, nil, image.Pt(0, r1.Min.Y))
 		// flushimage(display, 1); // BUG?
 	}
 }

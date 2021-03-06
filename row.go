@@ -48,26 +48,10 @@ func (row *Row) Add(_ *Column, x int) *Column {
 }
 
 func (r *Row) Resize(rect image.Rectangle) {
-	or := row.r
 	row.r = rect
-	r1 := rect
-	r1.Max.X = r1.Min.X
 	for i := 0; i < len(row.col); i++ {
 		c := row.col[i]
-		r1.Min.X = r1.Max.X
-		// the test should not be necessary, but guarantee we don't lose a pixel
-		if i == len(row.col)-1 {
-			r1.Max.X = rect.Max.X
-		} else {
-			r1.Max.X = rect.Min.X + (c.r.Max.X-or.Min.X)*rect.Dx()/or.Dx()
-		}
-		if i > 0 {
-			r2 := r1
-			r2.Max.X = r2.Min.X + row.display.ScaleSize(Border)
-			row.display.ScreenImage().Draw(r2, row.display.Black(), nil, image.Point{})
-			r1.Min.X = r2.Max.X
-		}
-		c.Resize(r1)
+		c.Resize(rect)
 	}
 }
 
@@ -387,40 +371,10 @@ func (row *Row) loadimpl(dump *dumpfile.Content, initing bool) error {
 	}
 
 	// TODO(rjk): put column width parsing in a separate function.
-	for i, col := range dump.Columns {
+	for _, col := range dump.Columns {
 		percent := col.Position
 		if percent < 0 || percent >= 100 {
 			return fmt.Errorf("Load: column width %f is invalid", percent)
-		}
-
-		x := int(float64(row.r.Min.X) + percent*float64(row.r.Dx())/100.0 + 0.5)
-
-		// TODO(rjk): Sigh. A more explicit MVC would simplify thinking about this code.
-		if i < len(row.col) {
-			if i == 0 {
-				continue
-			}
-			c1 := row.col[i-1]
-			c2 := row.col[i]
-			r1 := c1.r
-			r2 := c2.r
-			if x < Border {
-				x = Border
-			}
-			r1.Max.X = x - Border
-			r2.Max.X = x
-			if r1.Dx() < 50 || r2.Dx() < 50 {
-				continue
-			}
-			row.display.ScreenImage().Draw(image.Rectangle{r1.Min, r2.Max}, row.display.White(), nil, image.Point{})
-			c1.Resize(r1)
-			c2.Resize(r2)
-			r2.Min.X = x - Border
-			r2.Max.X = x
-			row.display.ScreenImage().Draw(r2, row.display.Black(), nil, image.Point{})
-		}
-		if i >= len(row.col) {
-			row.Add(nil, x)
 		}
 	}
 
