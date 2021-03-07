@@ -144,7 +144,7 @@ func main() {
 		const WindowsPerCol = 6
 
 		row.Init(display.ScreenImage().R(), display)
-		if loadfile == "" || row.Load(dump, loadfile, true) != nil {
+		if loadfile == "" || row.Load(dump, loadfile) != nil {
 			readArgFiles(flag.Args())
 		}
 		display.Flush()

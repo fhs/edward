@@ -1431,7 +1431,7 @@ func TestXfidreadQindex(t *testing.T) {
 
 			setGlobalsForLoadTesting()
 
-			err := row.Load(nil, filename, true)
+			err := row.Load(nil, filename)
 			if err != nil {
 				t.Fatalf("Row.Load failed: %v", err)
 			}

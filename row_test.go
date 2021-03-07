@@ -155,7 +155,7 @@ func TestRowLoad(t *testing.T) {
 
 			setGlobalsForLoadTesting()
 
-			err := row.Load(nil, filename, true)
+			err := row.Load(nil, filename)
 			if err != nil {
 				t.Fatalf("Row.Load failed: %v", err)
 			}
@@ -239,14 +239,14 @@ func TestRowDumpError(t *testing.T) {
 func TestRowLoadError(t *testing.T) {
 	var r Row
 
-	err := r.Load(nil, "/non-existent-file", true)
+	err := r.Load(nil, "/non-existent-file")
 	want := "can't load dump file: open /non-existent-file:"
 	if err == nil || !strings.HasPrefix(err.Error(), want) {
 		t.Errorf("Row.Load returned error %q; want prefix %q", err, want)
 	}
 
 	home = ""
-	err = r.Load(nil, "", true)
+	err = r.Load(nil, "")
 	want = "can't find file for load: can't find home directory"
 	if err == nil || err.Error() != want {
 		t.Errorf("Row.Load returned error %q; want %q", err, want)

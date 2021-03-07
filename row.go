@@ -324,7 +324,7 @@ func (row *Row) loadhelper(win *dumpfile.Window) error {
 
 // Load restores Edwood's state stored in dump. If dump is nil, it is parsed from file.
 // If initing is true, Row will be initialized.
-func (row *Row) Load(dump *dumpfile.Content, file string, initing bool) error {
+func (row *Row) Load(dump *dumpfile.Content, file string) error {
 	if dump == nil {
 		if file == "" {
 			f, err := defaultDumpFile()
@@ -339,7 +339,7 @@ func (row *Row) Load(dump *dumpfile.Content, file string, initing bool) error {
 		}
 		dump = d
 	}
-	err := row.loadimpl(dump, initing)
+	err := row.loadimpl(dump)
 	if err != nil {
 		return warnError(nil, "can't load row: %v", err)
 	}
@@ -347,7 +347,7 @@ func (row *Row) Load(dump *dumpfile.Content, file string, initing bool) error {
 }
 
 // TODO(rjk): split this apart into smaller functions and files.
-func (row *Row) loadimpl(dump *dumpfile.Content, initing bool) error {
+func (row *Row) loadimpl(dump *dumpfile.Content) error {
 	// log.Println("Load start", file, initing)
 	// defer log.Println("Load ended")
 
@@ -362,10 +362,6 @@ func (row *Row) loadimpl(dump *dumpfile.Content, initing bool) error {
 
 	// fixed width font
 	*fixedfontflag = dump.FixedFont
-
-	if initing && len(row.col) == 0 {
-		row.Init(row.display.ScreenImage().R(), row.display)
-	}
 
 	// Column widths
 	if len(dump.Columns) > 10 {
