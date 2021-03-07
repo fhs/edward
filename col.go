@@ -31,16 +31,16 @@ func (c *Column) nw() int {
 // display dis.
 // TODO(rjk): Why does this need to handle the case where c is nil?
 // TODO(rjk): Do we (re)initialize a Column object? It would seem likely.
-func (c *Column) Init(r image.Rectangle, dis draw.Display) *Column {
+func (c *Column) Init(dis draw.Display) *Column {
 	if c == nil {
 		c = &Column{}
 	}
 	c.display = dis
 	c.w = []*Window{}
+	c.r = dis.ScreenImage().R()
 	if c.display != nil {
-		c.display.ScreenImage().Draw(r, c.display.White(), nil, image.Point{})
+		c.display.ScreenImage().Draw(c.r, c.display.White(), nil, image.Point{})
 	}
-	c.r = r
 	c.safe = true
 	return c
 }
@@ -67,7 +67,6 @@ func (c *Column) Add(w, clone *Window, y int) *Window {
 	}
 
 	r := c.r
-	r.Min.Y = 0
 
 	if w == nil {
 		w = NewWindow()
@@ -149,20 +148,10 @@ func (c *Column) MouseBut() {
 
 func (c *Column) Resize(r image.Rectangle) {
 	clearmouse()
-	r1 := r
 	for i := 0; i < c.nw(); i++ {
 		w := c.w[i]
 		w.maxlines = 0
-		if i == c.nw()-1 {
-			r1.Max.Y = r.Max.Y
-		} else {
-			r1.Max.Y = r1.Min.Y
-			if c.r.Dy() != 0 {
-				r1.Max.Y += w.r.Dy() * r.Dy() / c.r.Dy()
-			}
-		}
-		r1.Max.Y = max(r1.Max.Y, r1.Min.Y)
-		r1.Min.Y = w.Resize(r1, false, i == c.nw()-1)
+		w.Resize(r, false, i == c.nw()-1)
 	}
 	c.r = r
 }
@@ -173,14 +162,7 @@ func (c *Column) Which(p image.Point) *Text {
 	}
 	for _, w := range c.w {
 		if p.In(w.r) {
-			if p.In(w.tagtop) || p.In(w.tag.all) {
-				return &w.tag
-			}
-			// exclude partial line at bottom
-			if p.X >= w.body.scrollr.Max.X && p.Y >= w.body.fr.Rect().Max.Y {
-				return nil
-			}
-			return &w.body
+			return w.Which(p)
 		}
 	}
 	return nil

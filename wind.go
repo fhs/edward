@@ -306,6 +306,17 @@ func (w *Window) Resize(r image.Rectangle, safe, keepextra bool) int {
 	return w.r.Max.Y
 }
 
+func (w *Window) Which(p image.Point) *Text {
+	if p.In(w.tagtop) || p.In(w.tag.all) {
+		return &w.tag
+	}
+	// exclude partial line at bottom
+	if p.X >= w.body.scrollr.Max.X && p.Y >= w.body.fr.Rect().Max.Y {
+		return nil
+	}
+	return &w.body
+}
+
 // Lock1 locks just this Window. This is a helper for Lock.
 // TODO(rjk): This should be an internal detail of Window.
 func (w *Window) lock1(owner int) {

@@ -64,9 +64,8 @@ func (row *Row) add(display draw.Display, _ *Column, x int) *Column {
 		log.Panicf("cannot create more than one column")
 	}
 
-	r := display.ScreenImage().R()
 	c := &Column{}
-	c.Init(r, display)
+	c.Init(display)
 	c.row = row
 	row.col = []*Column{c}
 	clearmouse()
