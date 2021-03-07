@@ -416,11 +416,13 @@ func MovedMouse(m draw.Mouse) {
 	}
 }
 
-func keyboardthread(display draw.Display, keyboardctl *draw.Keyboardctl) {
+func keyboardthread(w *Window) {
 	var (
 		timer *time.Timer
 		t     *Text
 	)
+	display := w.display
+	keyboardctl := w.keyboardctl
 	emptyTimer := make(<-chan time.Time)
 	timerchan := emptyTimer
 	typetext := (*Text)(nil)
@@ -436,7 +438,7 @@ func keyboardthread(display draw.Display, keyboardctl *draw.Keyboardctl) {
 			}
 		case r := <-keyboardctl.C:
 			for {
-				typetext = row.Type(r, mouse.Point)
+				typetext = row.Type(w, r, mouse.Point)
 				t = typetext
 				if t != nil && t.col != nil && !(r == draw.KeyDown || r == draw.KeyLeft || r == draw.KeyRight) { // scrolling doesn't change activecol
 					activecol = t.col

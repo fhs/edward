@@ -69,25 +69,21 @@ func (r *Row) Which(p image.Point) *Text {
 	return nil
 }
 
-func (row *Row) Type(r rune, p image.Point) *Text {
-	var (
-		w *Window
-		t *Text
-	)
-
+func (row *Row) Type(w *Window, r rune, p image.Point) *Text {
 	if r == 0 {
 		r = utf8.RuneError
 	}
 
 	clearmouse()
 	row.lk.Lock()
+	var t *Text
 	if *barflag {
 		t = barttext
 	} else {
-		t = row.Which(p)
+		t = w.Which(p)
 	}
 	if t != nil && !(t.what == Tag && p.In(t.scrollr)) {
-		w = t.w
+		w := t.w
 		if w == nil {
 			// Texts in column tags or the very top.
 			t.Type(r)
