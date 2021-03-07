@@ -124,11 +124,6 @@ func errorwin1(dir string, incl []string) *Window {
 	r := errorwin1Name(dir)
 	w := lookfile(r)
 	if w == nil {
-		if len(row.col) == 0 {
-			if row.Add(nil, -1) == nil {
-				acmeerror("can't create column to make error window", nil)
-			}
-		}
 		w = row.col[len(row.col)-1].Add(nil, nil, -1)
 		w.filemenu = false
 		w.SetName(r)
@@ -204,9 +199,6 @@ func makenewwindow(t *Text) *Window {
 	case t != nil && t.col != nil:
 		c = t.col
 	default:
-		if len(row.col) == 0 && row.Add(nil, -1) == nil {
-			acmeerror("can't make column", nil)
-		}
 		c = row.col[len(row.col)-1]
 	}
 	activecol = c

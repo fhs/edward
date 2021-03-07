@@ -145,22 +145,7 @@ func main() {
 
 		row.Init(display.ScreenImage().R(), display)
 		if loadfile == "" || row.Load(dump, loadfile, true) != nil {
-			// Open the files from the command line, up to WindowsPerCol each
-			files := flag.Args()
-			row.Add(nil, -1) // only one column
-			rightmostcol := row.col[len(row.col)-1]
-			if len(files) == 0 {
-				readfile(row.col[len(row.col)-1], wdir)
-			} else {
-				for i, filename := range files {
-					// guide  always goes in the rightmost column
-					if filepath.Base(filename) == "guide" || i/WindowsPerCol >= len(row.col) {
-						readfile(rightmostcol, filename)
-					} else {
-						readfile(row.col[i/WindowsPerCol], filename)
-					}
-				}
-			}
+			readArgFiles(flag.Args())
 		}
 		display.Flush()
 
@@ -186,6 +171,18 @@ func main() {
 		killprocs(fs)
 		os.Exit(0)
 	})
+}
+
+// readArgFiles opens the files from the command line.
+func readArgFiles(files []string) {
+	col := row.col[0]
+	if len(files) == 0 {
+		readfile(col, wdir)
+	} else {
+		for _, filename := range files {
+			readfile(col, filename)
+		}
+	}
 }
 
 func readfile(c *Column, filename string) {

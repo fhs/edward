@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"image"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -30,12 +31,13 @@ func (row *Row) Init(r image.Rectangle, dis draw.Display) *Row {
 	row.display.ScreenImage().Draw(r, row.display.White(), nil, image.Point{})
 	row.col = []*Column{}
 	row.r = r
+	row.add(nil, -1) // we only support one column
 	return row
 }
 
-func (row *Row) Add(_ *Column, x int) *Column {
+func (row *Row) add(_ *Column, x int) *Column {
 	if len(row.col) > 0 {
-		return row.col[0]
+		log.Panicf("cannot create more than one column")
 	}
 
 	r := row.r
