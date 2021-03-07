@@ -81,11 +81,8 @@ func (r *Row) Resize(rect image.Rectangle) {
 }
 
 func (r *Row) WhichCol(p image.Point) *Column {
-	for i := 0; i < len(row.col); i++ {
-		c := row.col[i]
-		if p.In(c.r) {
-			return c
-		}
+	if len(r.col) > 0 {
+		return r.col[0]
 	}
 	return nil
 }
@@ -235,7 +232,7 @@ func (r *Row) dump() (*dumpfile.Content, error) {
 					Q0:     w.body.q0,
 					Q1:     w.body.q1,
 				},
-				Position: 100.0 * float64(w.r.Min.Y-c.r.Min.Y) / float64(c.r.Dy()),
+				Position: 0,
 				Font:     fontname,
 			})
 			dw := dump.Windows[len(dump.Windows)-1]
@@ -279,10 +276,7 @@ func (row *Row) loadhelper(win *dumpfile.Window) error {
 		i = len(row.col) - 1
 	}
 	c := row.col[i]
-	y := c.r.Min.Y + int((win.Position*float64(c.r.Dy()))/100.+0.5)
-	if y < c.r.Min.Y || y >= c.r.Max.Y {
-		y = -1
-	}
+	y := -1
 
 	subl := strings.SplitN(win.Tag.Buffer, " ", 2)
 	if len(subl) != 2 {
