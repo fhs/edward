@@ -19,7 +19,6 @@ const RowTag = "Newcol Kill Putall Dump Exit "
 
 type Row struct {
 	lk  sync.Mutex
-	r   image.Rectangle
 	col []*Column
 }
 
@@ -47,7 +46,6 @@ func (row *Row) Init(dump *dumpfile.Content, loadfile string) *Row {
 	r := display.ScreenImage().R()
 	display.ScreenImage().Draw(r, display.White(), nil, image.Point{})
 	row.col = []*Column{}
-	row.r = r
 	row.add(display, nil, -1) // we only support one column
 
 	if loadfile == "" || row.Load(dump, loadfile) != nil {
@@ -66,7 +64,7 @@ func (row *Row) add(display draw.Display, _ *Column, x int) *Column {
 		log.Panicf("cannot create more than one column")
 	}
 
-	r := row.r
+	r := display.ScreenImage().R()
 	c := &Column{}
 	c.Init(r, display)
 	c.row = row
@@ -76,7 +74,6 @@ func (row *Row) add(display draw.Display, _ *Column, x int) *Column {
 }
 
 func (r *Row) Resize(rect image.Rectangle) {
-	row.r = rect
 	for i := 0; i < len(row.col); i++ {
 		c := row.col[i]
 		c.Resize(rect)
@@ -195,7 +192,7 @@ func (r *Row) dump() (*dumpfile.Content, error) {
 
 	for i, c := range r.col {
 		dump.Columns[i] = dumpfile.Column{
-			Position: 100.0 * float64(c.r.Min.X-row.r.Min.X) / float64(r.r.Dx()),
+			Position: 0,
 			Tag: dumpfile.Text{
 				Buffer: string(Lheader),
 				Q0:     0,
