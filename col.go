@@ -13,7 +13,6 @@ var (
 )
 
 type Column struct {
-	r       image.Rectangle
 	row     *Row
 	w       []*Window // These are sorted from top to bottom (increasing Y)
 	safe    bool
@@ -160,13 +159,9 @@ func (c *Column) Resize(r image.Rectangle) {
 		w.maxlines = 0
 		w.Resize(r, false, i == c.nw()-1)
 	}
-	c.r = r
 }
 
 func (c *Column) Which(p image.Point) *Text {
-	if !p.In(c.r) {
-		return nil
-	}
 	for _, w := range c.w {
 		if p.In(w.r) {
 			return w.Which(p)
