@@ -14,7 +14,6 @@ var (
 
 type Column struct {
 	display draw.Display
-	Border  int
 	r       image.Rectangle
 	row     *Row
 	w       []*Window // These are sorted from top to bottom (increasing Y)
@@ -38,10 +37,8 @@ func (c *Column) Init(r image.Rectangle, dis draw.Display) *Column {
 	}
 	c.display = dis
 	c.w = []*Window{}
-	c.Border = c.display.ScaleSize(Border)
 	if c.display != nil {
 		c.display.ScreenImage().Draw(r, c.display.White(), nil, image.Point{})
-		c.Border = c.display.ScaleSize(Border)
 	}
 	c.r = r
 	c.safe = true
