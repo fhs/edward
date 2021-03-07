@@ -13,7 +13,6 @@ var (
 )
 
 type Column struct {
-	display draw.Display
 	r       image.Rectangle
 	row     *Row
 	w       []*Window // These are sorted from top to bottom (increasing Y)
@@ -31,16 +30,11 @@ func (c *Column) nw() int {
 // display dis.
 // TODO(rjk): Why does this need to handle the case where c is nil?
 // TODO(rjk): Do we (re)initialize a Column object? It would seem likely.
-func (c *Column) Init(dis draw.Display) *Column {
+func (c *Column) Init() *Column {
 	if c == nil {
 		c = &Column{}
 	}
-	c.display = dis
 	c.w = []*Window{}
-	c.r = dis.ScreenImage().R()
-	if c.display != nil {
-		c.display.ScreenImage().Draw(c.r, c.display.White(), nil, image.Point{})
-	}
 	c.safe = true
 	return c
 }
@@ -62,19 +56,33 @@ func (c *Column) findWindowContainingY(y int) (i int, v *Window) {
 // Add adds a window to the Column.
 // TODO(rjk): what are the args?
 func (c *Column) Add(w, clone *Window, y int) *Window {
-	if len(c.w) > 0 {
-		log.Panicf("can't create more than one window in column")
+	display, err := drawDev.NewDisplay(nil, *varfontflag, "edwood", *winsize)
+	if err != nil {
+		log.Fatalf("can't open display: %v\n", err)
 	}
+	if err := display.Attach(draw.Refnone); err != nil {
+		panic("failed to attach to window")
+	}
+	r := display.ScreenImage().R()
+	display.ScreenImage().Draw(r, display.White(), nil, image.Point{})
 
-	r := c.r
+	mousectl = display.InitMouse()
+	keyboardctl = display.InitKeyboard()
+
+	iconinit(display)
+
+	mousectl = display.InitMouse()
+	mouse = &mousectl.Mouse
+	go mousethread(display)
+	go keyboardthread(display)
 
 	if w == nil {
 		w = NewWindow()
 		w.col = c
-		if c.display != nil {
-			c.display.ScreenImage().Draw(r, textcolors[frame.ColBack], nil, image.Point{})
+		if display != nil {
+			display.ScreenImage().Draw(r, textcolors[frame.ColBack], nil, image.Point{})
 		}
-		w.Init(clone, r, c.display)
+		w.Init(clone, r, display)
 	} else {
 		w.col = c
 		w.Resize(r, false, true)
@@ -86,8 +94,8 @@ func (c *Column) Add(w, clone *Window, y int) *Window {
 	c.w = append(c.w, w)
 	c.safe = true
 	savemouse(w)
-	if c.display != nil {
-		c.display.MoveTo(w.tag.scrollr.Max.Add(image.Pt(3, 3)))
+	if display != nil {
+		display.MoveTo(w.tag.scrollr.Max.Add(image.Pt(3, 3)))
 	}
 	barttext = &w.body
 	return w

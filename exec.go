@@ -27,34 +27,39 @@ type Exectab struct {
 	flag2 bool
 }
 
-var exectab = []Exectab{
-	//	{ "Abort",		doabort,	false,	true /*unused*/,		true /*unused*/,		},
-	{"Cut", cut, true, true, true},
-	{"Del", del, false, false, true /*unused*/},
-	{"Delete", del, false, true, true /*unused*/},
-	{"Dump", dump, false, true, true /*unused*/},
-	{"Edit", edit, false, true /*unused*/, true /*unused*/},
-	{"Exit", xexit, false, true /*unused*/, true /*unused*/},
-	{"Font", fontx, false, true /*unused*/, true /*unused*/},
-	{"Get", get, false, true, true /*unused*/},
-	{"ID", id, false, true /*unused*/, true /*unused*/},
-	//	{ "Incl",		incl,		false,	true /*unused*/,		true /*unused*/		},
-	{"Indent", indent, false, true /*unused*/, true /*unused*/},
-	{"Kill", xkill, false, true /*unused*/, true /*unused*/},
-	{"Load", dump, false, false, true /*unused*/},
-	{"Local", local, false, true /*unused*/, true /*unused*/},
-	{"Look", look, false, true /*unused*/, true /*unused*/},
-	{"New", newx, false, true /*unused*/, true /*unused*/},
-	{"Paste", paste, true, true, true /*unused*/},
-	{"Put", put, false, true /*unused*/, true /*unused*/},
-	{"Putall", putall, false, true /*unused*/, true /*unused*/},
-	{"Redo", undo, false, false, true /*unused*/},
-	{"Send", sendx, true, true /*unused*/, true /*unused*/},
-	{"Snarf", cut, false, true, false},
-	{"Tab", tab, false, true /*unused*/, true /*unused*/},
-	{"Tabexpand", expandtab, false, true /*unused*/, true /*unused*/},
-	{"Undo", undo, false, true, true /*unused*/},
-	{"Zerox", zeroxx, false, true /*unused*/, true /*unused*/},
+var exectab []Exectab
+
+func init() {
+	// We need this in init() to avoid initialization loop.
+	exectab = []Exectab{
+		//	{ "Abort",		doabort,	false,	true /*unused*/,		true /*unused*/,		},
+		{"Cut", cut, true, true, true},
+		{"Del", del, false, false, true /*unused*/},
+		{"Delete", del, false, true, true /*unused*/},
+		{"Dump", dump, false, true, true /*unused*/},
+		{"Edit", edit, false, true /*unused*/, true /*unused*/},
+		{"Exit", xexit, false, true /*unused*/, true /*unused*/},
+		{"Font", fontx, false, true /*unused*/, true /*unused*/},
+		{"Get", get, false, true, true /*unused*/},
+		{"ID", id, false, true /*unused*/, true /*unused*/},
+		//	{ "Incl",		incl,		false,	true /*unused*/,		true /*unused*/		},
+		{"Indent", indent, false, true /*unused*/, true /*unused*/},
+		{"Kill", xkill, false, true /*unused*/, true /*unused*/},
+		{"Load", dump, false, false, true /*unused*/},
+		{"Local", local, false, true /*unused*/, true /*unused*/},
+		{"Look", look, false, true /*unused*/, true /*unused*/},
+		{"New", newx, false, true /*unused*/, true /*unused*/},
+		{"Paste", paste, true, true, true /*unused*/},
+		{"Put", put, false, true /*unused*/, true /*unused*/},
+		{"Putall", putall, false, true /*unused*/, true /*unused*/},
+		{"Redo", undo, false, false, true /*unused*/},
+		{"Send", sendx, true, true /*unused*/, true /*unused*/},
+		{"Snarf", cut, false, true, false},
+		{"Tab", tab, false, true /*unused*/, true /*unused*/},
+		{"Tabexpand", expandtab, false, true /*unused*/, true /*unused*/},
+		{"Undo", undo, false, true, true /*unused*/},
+		{"Zerox", zeroxx, false, true /*unused*/, true /*unused*/},
+	}
 }
 
 var wsre = regexp.MustCompile("[ \t\n]+")

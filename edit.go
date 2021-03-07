@@ -87,41 +87,46 @@ const (
 	wordx = "\t\n"
 )
 
-var cmdtab = []Cmdtab{
-	// cmdc	text	regexp	addr	defcmd	defaddr	count	token	 fn
-	{'\n', false, false, false, 0, aDot, cNo, "", nl_cmd},
-	{'a', true, false, false, 0, aDot, cNo, "", a_cmd},
-	{'b', false, false, false, 0, aNo, cNo, linex, b_cmd},
-	{'c', true, false, false, 0, aDot, cNo, "", c_cmd},
-	{'d', false, false, false, 0, aDot, cNo, "", d_cmd},
-	{'e', false, false, false, 0, aNo, cNo, wordx, e_cmd},
-	{'f', false, false, false, 0, aNo, cNo, wordx, f_cmd},
-	{'g', false, true, false, 'p', aDot, cNo, "", nil}, // Assingned to g_cmd in init() to avoid initialization loop
-	{'i', true, false, false, 0, aDot, cNo, "", i_cmd},
-	{'m', false, false, true, 0, aDot, cNo, "", m_cmd},
-	{'p', false, false, false, 0, aDot, cNo, "", p_cmd},
-	{'r', false, false, false, 0, aDot, cNo, wordx, e_cmd},
-	{'s', false, true, false, 0, aDot, cUnsigned, "", s_cmd},
-	{'t', false, false, true, 0, aDot, cNo, "", m_cmd},
-	{'u', false, false, false, 0, aNo, cSigned, "", u_cmd},
-	{'v', false, true, false, 'p', aDot, cNo, "", nil}, // Assingned to g_cmd in init() to avoid initialization loop
-	{'w', false, false, false, 0, aAll, cNo, wordx, w_cmd},
-	{'x', false, true, false, 'p', aDot, cNo, "", nil}, // Assingned to x_cmd in init() to avoid initialization loop
-	{'y', false, true, false, 'p', aDot, cNo, "", nil}, // Assingned to x_cmd in init() to avoid initialization loop
-	{'=', false, false, false, 0, aDot, cNo, linex, eq_cmd},
-	{'B', false, false, false, 0, aNo, cNo, linex, B_cmd},
-	{'D', false, false, false, 0, aNo, cNo, linex, D_cmd},
-	{'X', false, true, false, 'f', aNo, cNo, "", nil}, // Assingned to X_cmd in init() to avoid initialization loop
-	{'Y', false, true, false, 'f', aNo, cNo, "", nil}, // Assingned to X_cmd in init() to avoid initialization loop
-	{'<', false, false, false, 0, aDot, cNo, linex, pipe_cmd},
-	{'|', false, false, false, 0, aDot, cNo, linex, pipe_cmd},
-	{'>', false, false, false, 0, aDot, cNo, linex, pipe_cmd},
-	/* deliberately unimplemented:
-	{'k', false, false, false, 0, aDot, cNo, "", k_cmd},
-	{'n', false, false, false, 0, aNo, cNo, "", n_cmd},
-	{'q', false, false, false, 0, aNo, cNo, "", q_cmd},
-	{'!', false, false, false, 0, aNo, cNo, linex, plan9_cmd},
-	*/
+var cmdtab []Cmdtab
+
+func init() {
+	// We need this in init() to avoid initialization loop.
+	cmdtab = []Cmdtab{
+		// cmdc	text	regexp	addr	defcmd	defaddr	count	token	 fn
+		{'\n', false, false, false, 0, aDot, cNo, "", nl_cmd},
+		{'a', true, false, false, 0, aDot, cNo, "", a_cmd},
+		{'b', false, false, false, 0, aNo, cNo, linex, b_cmd},
+		{'c', true, false, false, 0, aDot, cNo, "", c_cmd},
+		{'d', false, false, false, 0, aDot, cNo, "", d_cmd},
+		{'e', false, false, false, 0, aNo, cNo, wordx, e_cmd},
+		{'f', false, false, false, 0, aNo, cNo, wordx, f_cmd},
+		{'g', false, true, false, 'p', aDot, cNo, "", nil}, // Assingned to g_cmd in init() to avoid initialization loop
+		{'i', true, false, false, 0, aDot, cNo, "", i_cmd},
+		{'m', false, false, true, 0, aDot, cNo, "", m_cmd},
+		{'p', false, false, false, 0, aDot, cNo, "", p_cmd},
+		{'r', false, false, false, 0, aDot, cNo, wordx, e_cmd},
+		{'s', false, true, false, 0, aDot, cUnsigned, "", s_cmd},
+		{'t', false, false, true, 0, aDot, cNo, "", m_cmd},
+		{'u', false, false, false, 0, aNo, cSigned, "", u_cmd},
+		{'v', false, true, false, 'p', aDot, cNo, "", nil}, // Assingned to g_cmd in init() to avoid initialization loop
+		{'w', false, false, false, 0, aAll, cNo, wordx, w_cmd},
+		{'x', false, true, false, 'p', aDot, cNo, "", nil}, // Assingned to x_cmd in init() to avoid initialization loop
+		{'y', false, true, false, 'p', aDot, cNo, "", nil}, // Assingned to x_cmd in init() to avoid initialization loop
+		{'=', false, false, false, 0, aDot, cNo, linex, eq_cmd},
+		{'B', false, false, false, 0, aNo, cNo, linex, B_cmd},
+		{'D', false, false, false, 0, aNo, cNo, linex, D_cmd},
+		{'X', false, true, false, 'f', aNo, cNo, "", nil}, // Assingned to X_cmd in init() to avoid initialization loop
+		{'Y', false, true, false, 'f', aNo, cNo, "", nil}, // Assingned to X_cmd in init() to avoid initialization loop
+		{'<', false, false, false, 0, aDot, cNo, linex, pipe_cmd},
+		{'|', false, false, false, 0, aDot, cNo, linex, pipe_cmd},
+		{'>', false, false, false, 0, aDot, cNo, linex, pipe_cmd},
+		/* deliberately unimplemented:
+		{'k', false, false, false, 0, aDot, cNo, "", k_cmd},
+		{'n', false, false, false, 0, aNo, cNo, "", n_cmd},
+		{'q', false, false, false, 0, aNo, cNo, "", q_cmd},
+		{'!', false, false, false, 0, aNo, cNo, linex, plan9_cmd},
+		*/
+	}
 }
 
 func init() {
