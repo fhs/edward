@@ -95,12 +95,8 @@ func (c *Column) Add(w, clone *Window, y int) *Window {
 }
 
 func (c *Column) Close(w *Window, dofree bool) {
-	var (
-		r            image.Rectangle
-		i            int
-		didmouse, up bool
-	)
 	// w is locked
+	var i int
 	for i = 0; i < len(c.w); i++ {
 		if c.w[i] == w {
 			goto Found
@@ -108,40 +104,30 @@ func (c *Column) Close(w *Window, dofree bool) {
 	}
 	acmeerror("can't find window", nil)
 Found:
-	r = w.r
 	w.tag.col = nil
 	w.body.col = nil
 	w.col = nil
-	didmouse = restoremouse(w)
+	didmouse := restoremouse(w)
 	if dofree {
 		w.Delete()
 		w.Close()
 	}
 	c.w = append(c.w[:i], c.w[i+1:]...)
 	if len(c.w) == 0 {
-		if c.display != nil {
-			c.display.ScreenImage().Draw(r, c.display.White(), nil, image.Point{})
-		}
+		log.Panicf("closing window is not implemented")
 		return
 	}
-	up = false
+	up := false
 	if i == len(c.w) { // extend last window down
 		w = c.w[i-1]
-		r.Min.Y = w.r.Min.Y
-		r.Max.Y = c.r.Max.Y
 	} else { // extend next window up
 		up = true
 		w = c.w[i]
-		r.Max.Y = w.r.Max.Y
-	}
-	if c.display != nil {
-		c.display.ScreenImage().Draw(r, textcolors[frame.ColBack], nil, image.Point{})
 	}
 	if c.safe && !c.fortest {
 		if !didmouse && up {
 			w.showdel = true
 		}
-		w.Resize(r, false, true)
 		if !didmouse && up {
 			w.moveToDel()
 		}
