@@ -514,7 +514,7 @@ func waitthread(ctx context.Context) {
 		case err := <-cerr:
 			row.lk.Lock()
 			warning(nil, "%s", err)
-			row.display.Flush()
+			//row.display.Flush()
 			row.lk.Unlock()
 
 		case cmd := <-ckill:
@@ -551,7 +551,7 @@ func waitthread(ctx context.Context) {
 				if !w.Success() {
 					warning(c.md, "%s: %s\n", c.name, w.String())
 				}
-				row.display.Flush()
+				//row.display.Flush()
 			}
 			row.lk.Unlock()
 			Freecmd(c)
@@ -567,9 +567,9 @@ func waitthread(ctx context.Context) {
 				break
 			}
 			command = append(command, c)
-			row.lk.Lock()
-			row.display.Flush()
-			row.lk.Unlock()
+			//row.lk.Lock()
+			//row.display.Flush()
+			//row.lk.Unlock()
 		}
 	}
 }
