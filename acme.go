@@ -105,21 +105,8 @@ func main() {
 	wdir, _ = os.Getwd()
 
 	draw.Main(func(dd *draw.Device) {
-		display, err := dd.NewDisplay(nil, *varfontflag, "edwood", *winsize)
-		if err != nil {
-			log.Fatalf("can't open display: %v\n", err)
-		}
-		if err := display.Attach(draw.Refnone); err != nil {
-			panic("failed to attach to window")
-		}
-		display.ScreenImage().Draw(display.ScreenImage().R(), display.White(), nil, image.Point{})
-
-		mousectl = display.InitMouse()
-		keyboardctl = display.InitKeyboard()
-
+		drawDev = dd
 		tagfont = *varfontflag
-
-		iconinit(display)
 
 		cwait = make(chan ProcessState)
 		ccommand = make(chan *Command)
@@ -133,9 +120,6 @@ func main() {
 		cexit = make(chan struct{})
 		cwarn = make(chan uint)
 
-		mousectl = display.InitMouse()
-		mouse = &mousectl.Mouse
-
 		startplumbing()
 		fs := fsysinit()
 
@@ -143,16 +127,10 @@ func main() {
 
 		const WindowsPerCol = 6
 
-		row.Init(display.ScreenImage().R(), display)
-		if loadfile == "" || row.Load(dump, loadfile) != nil {
-			readArgFiles(flag.Args())
-		}
-		display.Flush()
+		row.Init(dump, loadfile)
 
 		// After row is initialized
 		ctx := context.Background()
-		go mousethread(display)
-		go keyboardthread(display)
 		go waitthread(ctx)
 		go newwindowthread()
 		go xfidallocthread(ctx)

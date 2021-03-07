@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"image"
 	"log"
@@ -17,32 +18,57 @@ import (
 const RowTag = "Newcol Kill Putall Dump Exit "
 
 type Row struct {
-	display draw.Display
-	lk      sync.Mutex
-	r       image.Rectangle
-	col     []*Column
+	lk  sync.Mutex
+	r   image.Rectangle
+	col []*Column
 }
 
-func (row *Row) Init(r image.Rectangle, dis draw.Display) *Row {
+func (row *Row) Init(dump *dumpfile.Content, loadfile string) *Row {
+	display, err := drawDev.NewDisplay(nil, *varfontflag, "edwood", *winsize)
+	if err != nil {
+		log.Fatalf("can't open display: %v\n", err)
+	}
+	if err := display.Attach(draw.Refnone); err != nil {
+		panic("failed to attach to window")
+	}
+	display.ScreenImage().Draw(display.ScreenImage().R(), display.White(), nil, image.Point{})
+
+	mousectl = display.InitMouse()
+	keyboardctl = display.InitKeyboard()
+
+	iconinit(display)
+
+	mousectl = display.InitMouse()
+	mouse = &mousectl.Mouse
+
 	if row == nil {
 		row = &Row{}
 	}
-	row.display = dis
-	row.display.ScreenImage().Draw(r, row.display.White(), nil, image.Point{})
+	r := display.ScreenImage().R()
+	display.ScreenImage().Draw(r, display.White(), nil, image.Point{})
 	row.col = []*Column{}
 	row.r = r
-	row.add(nil, -1) // we only support one column
+	row.add(display, nil, -1) // we only support one column
+
+	if loadfile == "" || row.Load(dump, loadfile) != nil {
+		readArgFiles(flag.Args())
+	}
+	display.Flush()
+
+	go mousethread(display)
+	go keyboardthread(display)
+
 	return row
 }
 
-func (row *Row) add(_ *Column, x int) *Column {
+func (row *Row) add(display draw.Display, _ *Column, x int) *Column {
 	if len(row.col) > 0 {
 		log.Panicf("cannot create more than one column")
 	}
 
 	r := row.r
 	c := &Column{}
-	c.Init(r, row.display)
+	c.Init(r, display)
 	c.row = row
 	row.col = []*Column{c}
 	clearmouse()

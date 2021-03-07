@@ -89,7 +89,8 @@ var (
 	but3col   draw.Image
 
 	//	boxcursor Cursor
-	row Row
+	row     Row
+	drawDev *draw.Device
 
 	seltext   *Text
 	argtext   *Text
