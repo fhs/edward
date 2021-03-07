@@ -416,7 +416,7 @@ func MovedMouse(m draw.Mouse) {
 	}
 }
 
-func keyboardthread(display draw.Display) {
+func keyboardthread(display draw.Display, keyboardctl *draw.Keyboardctl) {
 	var (
 		timer *time.Timer
 		t     *Text

@@ -55,6 +55,8 @@ type Window struct {
 	taglines    int
 	tagtop      image.Rectangle
 	editoutlk   chan bool
+
+	keyboardctl *draw.Keyboardctl
 }
 
 func NewWindow() *Window {

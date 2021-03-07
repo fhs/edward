@@ -66,15 +66,7 @@ func (c *Column) Add(w, clone *Window, y int) *Window {
 	r := display.ScreenImage().R()
 	display.ScreenImage().Draw(r, display.White(), nil, image.Point{})
 
-	mousectl = display.InitMouse()
-	keyboardctl = display.InitKeyboard()
-
 	iconinit(display)
-
-	mousectl = display.InitMouse()
-	mouse = &mousectl.Mouse
-	go mousethread(display)
-	go keyboardthread(display)
 
 	if w == nil {
 		w = NewWindow()
@@ -91,6 +83,13 @@ func (c *Column) Add(w, clone *Window, y int) *Window {
 	w.tag.row = c.row
 	w.body.col = c
 	w.body.row = c.row
+	w.keyboardctl = display.InitKeyboard()
+
+	mousectl = display.InitMouse()
+	mouse = &mousectl.Mouse
+	go mousethread(display)
+	go keyboardthread(display, w.keyboardctl)
+
 	c.w = append(c.w, w)
 	c.safe = true
 	savemouse(w)
