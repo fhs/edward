@@ -16,7 +16,6 @@ import (
 
 	"9fans.net/go/plan9"
 	"github.com/google/go-cmp/cmp"
-	"github.com/rjkroege/edwood/internal/draw"
 	"github.com/rjkroege/edwood/internal/edwoodtest"
 )
 
@@ -26,10 +25,10 @@ func TestXfidallocthread(t *testing.T) {
 
 	ctx, cancel := context.WithCancel(context.Background())
 
-	d := (draw.Display)(nil)
+	//d := (draw.Display)(nil)
 	done := make(chan struct{})
 	go func() {
-		xfidallocthread(ctx, d)
+		xfidallocthread(ctx /*, d*/)
 		close(cxfidalloc)
 		close(cxfidfree)
 		cxfidalloc = nil
@@ -59,7 +58,7 @@ func TestXfidctl(t *testing.T) {
 
 	x := &Xfid{c: make(chan func(*Xfid))}
 	defer close(x.c)
-	go xfidctl(x, edwoodtest.NewDisplay())
+	go xfidctl(x /*, edwoodtest.NewDisplay()*/)
 
 	called := false
 	x.c <- func(x *Xfid) { called = true }

@@ -170,7 +170,7 @@ func main() {
 		go keyboardthread(display)
 		go waitthread(ctx)
 		go newwindowthread()
-		go xfidallocthread(ctx, display)
+		go xfidallocthread(ctx)
 
 		signal.Ignore(ignoreSignals...)
 		signal.Notify(csignal, hangupSignals...)
@@ -579,7 +579,7 @@ func waitthread(ctx context.Context) {
 // it instead of using a send and a receive to get one.
 // Frankly, it would be more idiomatic to let the GC take care of them,
 // though that would require an exit signal in xfidctl.
-func xfidallocthread(ctx context.Context, d draw.Display) {
+func xfidallocthread(ctx context.Context) {
 	xfree := (*Xfid)(nil)
 	for {
 		select {
@@ -592,7 +592,7 @@ func xfidallocthread(ctx context.Context, d draw.Display) {
 			} else {
 				x = &Xfid{}
 				x.c = make(chan func(*Xfid))
-				go xfidctl(x, d)
+				go xfidctl(x)
 			}
 			cxfidalloc <- x
 		case x := <-cxfidfree:

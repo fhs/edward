@@ -11,7 +11,6 @@ import (
 	"unicode/utf8"
 
 	"9fans.net/go/plan9"
-	"github.com/rjkroege/edwood/internal/draw"
 	"github.com/rjkroege/edwood/internal/ninep"
 	"github.com/rjkroege/edwood/internal/runes"
 )
@@ -32,14 +31,14 @@ func (x *Xfid) respond(t *plan9.Fcall, err error) *Xfid {
 	return x.fs.respond(x, t, err)
 }
 
-func xfidctl(x *Xfid, d draw.Display) {
+func xfidctl(x *Xfid) {
 	// log.Println("xfidctl", x)
 	// defer log.Println("done xfidctl")
 	for f := range x.c {
 		f(x)
-		if d != nil {
-			d.Flush()
-		} // d here is for testability.
+		//if d != nil {
+		//	d.Flush()
+		//} // d here is for testability.
 		cxfidfree <- x
 	}
 }
