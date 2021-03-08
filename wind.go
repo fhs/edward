@@ -57,6 +57,7 @@ type Window struct {
 	editoutlk   chan bool
 
 	keyboardctl *draw.Keyboardctl
+	mousectl    *draw.Mousectl
 }
 
 func NewWindow() *Window {

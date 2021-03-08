@@ -82,11 +82,12 @@ func (c *Column) Add(w, clone *Window, y int) *Window {
 	w.tag.row = c.row
 	w.body.col = c
 	w.body.row = c.row
-	w.keyboardctl = display.InitKeyboard()
 
+	w.keyboardctl = display.InitKeyboard()
 	mousectl = display.InitMouse()
-	mouse = &mousectl.Mouse
-	go mousethread(display)
+	w.mousectl = mousectl
+	mouse = &w.mousectl.Mouse
+	go mousethread(w)
 	go keyboardthread(w)
 
 	c.w = append(c.w, w)

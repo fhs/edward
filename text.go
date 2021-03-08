@@ -1100,7 +1100,7 @@ func (t *Text) Select() {
 		// stay here until something interesting happens
 		// TODO(rjk): Ack. This is horrible? Layering violation?
 		for {
-			mousectl.Read()
+			t.w.mousectl.Read()
 			if !(mouse.Buttons == b && abs(mouse.Point.X-x) < 3 && abs(mouse.Point.Y-y) < 3) {
 				break
 			}
@@ -1112,7 +1112,7 @@ func (t *Text) Select() {
 		selectq = q0
 	}
 	if mouse.Buttons == b {
-		sP0, sP1 := t.fr.Select(mousectl, mouse, func(fr frame.SelectScrollUpdater, dl int) { t.FrameScroll(fr, dl) })
+		sP0, sP1 := t.fr.Select(t.w.mousectl, mouse, func(fr frame.SelectScrollUpdater, dl int) { t.FrameScroll(fr, dl) })
 
 		// horrible botch: while asleep, may have lost selection altogether
 		if selectq > t.file.Size() {
@@ -1179,7 +1179,7 @@ func (t *Text) Select() {
 		}
 		t.display.Flush()
 		for mouse.Buttons == b {
-			mousectl.Read()
+			t.w.mousectl.Read()
 		}
 		clicktext = nil
 	}
@@ -1283,15 +1283,15 @@ func (t *Text) SetSelect(q0, q1 int) {
 // TODO(rjk): The implicit initialization of q0, q1 doesn't seem like very nice
 // style? Maybe it is idiomatic?
 func (t *Text) Select23(high draw.Image, mask uint) (q0, q1 int, buts uint) {
-	p0, p1 := t.fr.SelectOpt(mousectl, mouse, func(frame.SelectScrollUpdater, int) {}, t.display.White(), high)
+	p0, p1 := t.fr.SelectOpt(t.w.mousectl, mouse, func(frame.SelectScrollUpdater, int) {}, t.display.White(), high)
 
-	buts = uint(mousectl.Mouse.Buttons)
+	buts = uint(t.w.mousectl.Mouse.Buttons)
 	if (buts & mask) == 0 {
 		q0 = p0 + t.org
 		q1 = p1 + t.org
 	}
-	for mousectl.Mouse.Buttons != 0 {
-		mousectl.Read()
+	for t.w.mousectl.Mouse.Buttons != 0 {
+		t.w.mousectl.Read()
 	}
 	return q0, q1, buts
 }

@@ -253,17 +253,18 @@ func ismtpt(filename string) bool {
 	return strings.HasPrefix(s, m) && (m[len(m)-1] == '/' || len(s) == len(m) || s[len(m)] == '/')
 }
 
-func mousethread(display draw.Display) {
+func mousethread(w *Window) {
 	// TODO(rjk): Do we need this?
 	runtime.LockOSThread()
 
+	display := w.display
 	for {
 		row.lk.Lock()
 		flushwarnings()
 		row.lk.Unlock()
 		display.Flush()
 		select {
-		case <-mousectl.Resize:
+		case <-w.mousectl.Resize:
 			if err := display.Attach(draw.Refnone); err != nil {
 				panic("failed to attach to window")
 			}
@@ -271,8 +272,8 @@ func mousethread(display draw.Display) {
 			iconinit(display)
 			ScrlResize(display)
 			row.Resize(display.ScreenImage().R())
-		case mousectl.Mouse = <-mousectl.C:
-			MovedMouse(mousectl.Mouse)
+		case w.mousectl.Mouse = <-w.mousectl.C:
+			MovedMouse(w.mousectl.Mouse)
 		case <-cwarn:
 			// Do nothing
 		case pm := <-cplumb:
