@@ -8,7 +8,6 @@ import (
 	"9fans.net/go/plan9"
 	"9fans.net/go/plumb"
 	"github.com/rjkroege/edwood/internal/draw"
-	"github.com/rjkroege/edwood/internal/frame"
 )
 
 // These constants are used to identify a file in the file server.
@@ -96,13 +95,12 @@ var (
 	typetext  *Text // global because Text.Close needs to clear it
 	barttext  *Text // shared between mousethread and keyboardthread
 
-	activewin  *Window
-	activecol  *Column
-	home       string
-	acmeshell  string
-	textcolors [frame.NumColours]draw.Image
-	wdir       string
-	editing    = Inactive
+	activewin *Window
+	activecol *Column
+	home      string
+	acmeshell string
+	wdir      string
+	editing   = Inactive
 
 	cplumb     chan *plumb.Message
 	cwait      chan ProcessState

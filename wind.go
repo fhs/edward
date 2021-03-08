@@ -137,7 +137,7 @@ func (w *Window) Init(clone *Window, r image.Rectangle, dis draw.Display) {
 	} else {
 		rf = tagfont
 	}
-	w.body.Init(r1, rf, textcolors, w.display)
+	w.body.Init(r1, rf, w.textcolors, w.display)
 	w.body.what = Body
 	r1.Min.Y--
 	r1.Max.Y = r1.Min.Y + 1

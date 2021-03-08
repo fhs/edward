@@ -741,7 +741,7 @@ func fontx(et *Text, _ *Text, argt *Text, _, _ bool, arg string) {
 	display := et.w.display
 	if newfont := fontget(file, display); newfont != nil {
 		// TODO(rjk): maybe Frame should know how to clear itself on init?
-		display.ScreenImage().Draw(t.w.r, textcolors[frame.ColBack], nil, image.Point{})
+		display.ScreenImage().Draw(t.w.r, t.w.textcolors[frame.ColBack], nil, image.Point{})
 		t.font = file
 		t.fr.Init(t.w.r, frame.OptFont(newfont), frame.OptBackground(display.ScreenImage()))
 

@@ -206,7 +206,8 @@ var boxcursor = draw.Cursor{
 }
 
 type iconImages struct {
-	tagcolors [frame.NumColours]draw.Image
+	tagcolors  [frame.NumColours]draw.Image
+	textcolors [frame.NumColours]draw.Image
 }
 
 func iconinit(display draw.Display, m *iconImages) {
@@ -217,11 +218,11 @@ func iconinit(display draw.Display, m *iconImages) {
 		m.tagcolors[frame.ColBord], _ = display.AllocImage(image.Rect(0, 0, 1, 1), display.ScreenImage().Pix(), true, draw.Purpleblue)
 		m.tagcolors[frame.ColText] = display.Black()
 		m.tagcolors[frame.ColHText] = display.Black()
-		textcolors[frame.ColBack] = display.AllocImageMix(draw.Paleyellow, draw.White)
-		textcolors[frame.ColHigh], _ = display.AllocImage(image.Rect(0, 0, 1, 1), display.ScreenImage().Pix(), true, draw.Darkyellow)
-		textcolors[frame.ColBord], _ = display.AllocImage(image.Rect(0, 0, 1, 1), display.ScreenImage().Pix(), true, draw.Yellowgreen)
-		textcolors[frame.ColText] = display.Black()
-		textcolors[frame.ColHText] = display.Black()
+		m.textcolors[frame.ColBack] = display.AllocImageMix(draw.Paleyellow, draw.White)
+		m.textcolors[frame.ColHigh], _ = display.AllocImage(image.Rect(0, 0, 1, 1), display.ScreenImage().Pix(), true, draw.Darkyellow)
+		m.textcolors[frame.ColBord], _ = display.AllocImage(image.Rect(0, 0, 1, 1), display.ScreenImage().Pix(), true, draw.Yellowgreen)
+		m.textcolors[frame.ColText] = display.Black()
+		m.textcolors[frame.ColHText] = display.Black()
 	}
 
 	// ...
