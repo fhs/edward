@@ -259,7 +259,11 @@ func mousethread(w *Window) {
 			display.ScreenImage().Draw(display.ScreenImage().R(), display.White(), nil, image.Point{})
 			iconinit(display, &w.iconImages, w.fontget)
 			w.ScrlResize()
-			row.Resize(display.ScreenImage().R())
+			{
+				clearmouse()
+				w.maxlines = 0
+				w.Resize(display.ScreenImage().R(), false, true)
+			}
 		case w.mousectl.Mouse = <-w.mousectl.C:
 			m := &w.mousectl.Mouse
 			t := w.Which(m.Point)

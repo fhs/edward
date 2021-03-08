@@ -150,15 +150,6 @@ func (c *Column) CloseAll() {
 func (c *Column) MouseBut() {
 }
 
-func (c *Column) Resize(r image.Rectangle) {
-	clearmouse()
-	for i := 0; i < c.nw(); i++ {
-		w := c.w[i]
-		w.maxlines = 0
-		w.Resize(r, false, i == c.nw()-1)
-	}
-}
-
 func (c *Column) Clean() bool {
 	clean := true
 	for _, w := range c.w {

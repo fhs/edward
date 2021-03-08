@@ -47,13 +47,6 @@ func (row *Row) add(_ *Column, x int) *Column {
 	return c
 }
 
-func (r *Row) Resize(rect image.Rectangle) {
-	for i := 0; i < len(row.col); i++ {
-		c := row.col[i]
-		c.Resize(rect)
-	}
-}
-
 func (r *Row) WhichCol(p image.Point) *Column {
 	if len(r.col) > 0 {
 		return r.col[0]
