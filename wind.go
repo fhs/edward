@@ -163,7 +163,7 @@ func (w *Window) Init(clone *Window, r image.Rectangle, dis draw.Display) {
 func (w *Window) DrawButton() {
 	b := w.button
 	if w.body.file.SaveableAndDirty() {
-		b = modbutton
+		b = w.modbutton
 	}
 	var br image.Rectangle
 	br.Min = w.tag.scrollr.Min

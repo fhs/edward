@@ -209,6 +209,7 @@ type iconImages struct {
 	tagcolors  [frame.NumColours]draw.Image
 	textcolors [frame.NumColours]draw.Image
 	button     draw.Image
+	modbutton  draw.Image
 }
 
 func iconinit(display draw.Display, m *iconImages) {
@@ -234,20 +235,16 @@ func iconinit(display draw.Display, m *iconImages) {
 	m.button.Border(r, display.ScaleSize(ButtonBorder), m.tagcolors[frame.ColBord], image.Point{})
 
 	r = m.button.R()
-	modbutton, _ = display.AllocImage(r, display.ScreenImage().Pix(), false, draw.Notacolor)
-	modbutton.Draw(r, m.tagcolors[frame.ColBack], nil, r.Min)
+	m.modbutton, _ = display.AllocImage(r, display.ScreenImage().Pix(), false, draw.Notacolor)
+	m.modbutton.Draw(r, m.tagcolors[frame.ColBack], nil, r.Min)
 	r.Max.X -= display.ScaleSize(ButtonBorder)
-	modbutton.Border(r, display.ScaleSize(ButtonBorder), m.tagcolors[frame.ColBord], image.Point{})
+	m.modbutton.Border(r, display.ScaleSize(ButtonBorder), m.tagcolors[frame.ColBord], image.Point{})
 	r = r.Inset(display.ScaleSize(ButtonBorder))
 	tmp, _ := display.AllocImage(image.Rect(0, 0, 1, 1), display.ScreenImage().Pix(), true, draw.Medblue)
-	modbutton.Draw(r, tmp, nil, image.Point{})
-
-	r = m.button.R()
-	colbutton, _ = display.AllocImage(r, display.ScreenImage().Pix(), false, draw.Purpleblue)
+	m.modbutton.Draw(r, tmp, nil, image.Point{})
 
 	but2col, _ = display.AllocImage(image.Rect(0, 0, 1, 1), display.ScreenImage().Pix(), true, 0xAA0000FF)
 	but3col, _ = display.AllocImage(image.Rect(0, 0, 1, 1), display.ScreenImage().Pix(), true, 0x006600FF)
-
 }
 
 func ismtpt(filename string) bool {

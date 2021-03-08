@@ -79,10 +79,8 @@ var (
 	tagfont string
 	mouse   *draw.Mouse
 
-	modbutton draw.Image
-	colbutton draw.Image
-	but2col   draw.Image
-	but3col   draw.Image
+	but2col draw.Image
+	but3col draw.Image
 
 	//	boxcursor Cursor
 	row     Row
