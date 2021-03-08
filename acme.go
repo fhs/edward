@@ -176,23 +176,6 @@ func readfile(c *Column, filename string) {
 	xfidlog(w, "new")
 }
 
-var fontCache = make(map[string]draw.Font)
-
-func fontget(name string, display draw.Display) draw.Font {
-	var font draw.Font
-	var ok bool
-	if font, ok = fontCache[name]; !ok {
-		f, err := display.OpenFont(name)
-		if err != nil {
-			warning(nil, "can't open font file %s: %v\n", name, err)
-			return nil
-		}
-		fontCache[name] = f
-		font = f
-	}
-	return font
-}
-
 var boxcursor = draw.Cursor{
 	Point: image.Point{-7, -7},
 	Clr: [32]byte{0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
@@ -214,7 +197,7 @@ type iconImages struct {
 	but3col    draw.Image
 }
 
-func iconinit(display draw.Display, m *iconImages) {
+func iconinit(display draw.Display, m *iconImages, fontget func(string) draw.Font) {
 	//TODO(flux): Probably should de-globalize colors.
 	if m.tagcolors[frame.ColBack] == nil {
 		m.tagcolors[frame.ColBack] = display.AllocImageMix(draw.Palebluegreen, draw.White)
@@ -230,7 +213,7 @@ func iconinit(display draw.Display, m *iconImages) {
 	}
 
 	// ...
-	r := image.Rect(0, 0, display.ScaleSize(Scrollwid+ButtonBorder), fontget(tagfont, display).Height()+1)
+	r := image.Rect(0, 0, display.ScaleSize(Scrollwid+ButtonBorder), fontget(tagfont).Height()+1)
 	m.button, _ = display.AllocImage(r, display.ScreenImage().Pix(), false, draw.Notacolor)
 	m.button.Draw(r, m.tagcolors[frame.ColBack], nil, r.Min)
 	r.Max.X -= display.ScaleSize(ButtonBorder)
@@ -274,7 +257,7 @@ func mousethread(w *Window) {
 				panic("failed to attach to window")
 			}
 			display.ScreenImage().Draw(display.ScreenImage().R(), display.White(), nil, image.Point{})
-			iconinit(display, &w.iconImages)
+			iconinit(display, &w.iconImages, w.fontget)
 			ScrlResize(display)
 			row.Resize(display.ScreenImage().R())
 		case w.mousectl.Mouse = <-w.mousectl.C:

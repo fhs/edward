@@ -85,7 +85,7 @@ type Text struct {
 // getfont is a convenience accessor that gets the draw.Font from the font
 // used in this text.
 func (t *Text) getfont() draw.Font {
-	return fontget(t.font, t.display)
+	return t.w.fontget(t.font)
 }
 
 func (t *Text) Init(r image.Rectangle, rf string, cols [frame.NumColours]draw.Image, dis draw.Display) *Text {
@@ -104,7 +104,7 @@ func (t *Text) Init(r image.Rectangle, rf string, cols [frame.NumColours]draw.Im
 	t.font = rf
 	t.tabstop = int(maxtab)
 	t.tabexpand = tabexpand
-	t.fr = frame.NewFrame(r, fontget(rf, t.display), t.display.ScreenImage(), cols)
+	t.fr = frame.NewFrame(r, t.w.fontget(rf), t.display.ScreenImage(), cols)
 	t.Redraw(r, -1, false /* noredraw */)
 	return t
 }

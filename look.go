@@ -620,7 +620,7 @@ func openfile(t *Text, e *Expand) *Window {
 	seltext = t
 	if e.jump {
 		display := t.w.display
-		display.MoveTo(t.fr.Ptofchar(getP0(t.fr)).Add(image.Pt(4, fontget(tagfont, display).Height()-4)))
+		display.MoveTo(t.fr.Ptofchar(getP0(t.fr)).Add(image.Pt(4, w.fontget(tagfont).Height()-4)))
 	} else {
 		debug.PrintStack()
 	}

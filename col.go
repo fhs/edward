@@ -67,7 +67,6 @@ func (c *Column) Add(w, clone *Window, y int) *Window {
 
 	if w == nil {
 		w = NewWindow()
-		iconinit(display, &w.iconImages)
 		w.col = c
 		if display != nil {
 			display.ScreenImage().Draw(r, w.textcolors[frame.ColBack], nil, image.Point{})

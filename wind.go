@@ -59,11 +59,14 @@ type Window struct {
 	keyboardctl *draw.Keyboardctl
 	mousectl    *draw.Mousectl
 
+	fontCache map[string]draw.Font
 	iconImages
 }
 
 func NewWindow() *Window {
-	return &Window{}
+	return &Window{
+		fontCache: make(map[string]draw.Font),
+	}
 }
 
 // Initialize the headless parts of the window.
@@ -109,11 +112,12 @@ func (w *Window) initHeadless(clone *Window) *Window {
 func (w *Window) Init(clone *Window, r image.Rectangle, dis draw.Display) {
 	w.initHeadless(clone)
 	w.display = dis
+	iconinit(dis, &w.iconImages, w.fontget)
 	r1 := r
 
 	w.tagtop = r
-	w.tagtop.Max.Y = r.Min.Y + fontget(tagfont, w.display).Height()
-	r1.Max.Y = r1.Min.Y + w.taglines*fontget(tagfont, w.display).Height()
+	w.tagtop.Max.Y = r.Min.Y + w.fontget(tagfont).Height()
+	r1.Max.Y = r1.Min.Y + w.taglines*w.fontget(tagfont).Height()
 
 	w.tag.Init(r1, tagfont, w.tagcolors, w.display)
 	w.tag.what = Tag
@@ -126,7 +130,7 @@ func (w *Window) Init(clone *Window, r image.Rectangle, dis draw.Display) {
 		w.tag.SetSelect(len(w.tag.file.b), len(w.tag.file.b))
 	}
 	r1 = r
-	r1.Min.Y += w.taglines*fontget(tagfont, w.display).Height() + 1
+	r1.Min.Y += w.taglines*w.fontget(tagfont).Height() + 1
 	if r1.Max.Y < r1.Min.Y {
 		r1.Max.Y = r1.Min.Y
 	}
@@ -245,15 +249,15 @@ func (w *Window) Resize(r image.Rectangle, safe, keepextra bool) int {
 
 	// Tagtop is a rectangle corresponding to one line of tag.
 	w.tagtop = r
-	w.tagtop.Max.Y = r.Min.Y + fontget(tagfont, w.display).Height()
+	w.tagtop.Max.Y = r.Min.Y + w.fontget(tagfont).Height()
 
 	r1 := r
-	r1.Max.Y = min(r.Max.Y, r1.Min.Y+w.taglines*fontget(tagfont, w.display).Height())
+	r1.Max.Y = min(r.Max.Y, r1.Min.Y+w.taglines*w.fontget(tagfont).Height())
 
 	// If needed, recompute number of lines in tag.
 	if !safe || !w.tagsafe || !w.tag.all.Eq(r1) {
 		w.taglines = w.TagLines(r)
-		r1.Max.Y = min(r.Max.Y, r1.Min.Y+w.taglines*fontget(tagfont, w.display).Height())
+		r1.Max.Y = min(r.Max.Y, r1.Min.Y+w.taglines*w.fontget(tagfont).Height())
 	}
 
 	// Resize/redraw tag TODO(flux)
@@ -363,7 +367,7 @@ func (w *Window) Unlock() {
 func (w *Window) MouseBut() {
 	if w.display != nil {
 		w.display.MoveTo(w.tag.scrollr.Min.Add(
-			image.Pt(w.tag.scrollr.Dx(), fontget(tagfont, w.display).Height()).Div(2)))
+			image.Pt(w.tag.scrollr.Dx(), w.fontget(tagfont).Height()).Div(2)))
 	}
 }
 
@@ -664,7 +668,7 @@ func (w *Window) CtlPrint(fonts bool) string {
 	if fonts {
 		// fsys exposes the actual physical font name.
 		buf = fmt.Sprintf("%s%11d %s %11d ", buf, w.body.fr.Rect().Dx(),
-			quote(fontget(w.body.font, w.display).Name()), w.body.fr.GetMaxtab())
+			quote(w.fontget(w.body.font).Name()), w.body.fr.GetMaxtab())
 	}
 	return buf
 }
@@ -703,4 +707,17 @@ func (w *Window) ClampAddr() {
 	if w.addr.q1 > w.body.Nc() {
 		w.addr.q1 = w.body.Nc()
 	}
+}
+
+func (w *Window) fontget(name string) draw.Font {
+	if f, ok := w.fontCache[name]; ok {
+		return f
+	}
+	f, err := w.display.OpenFont(name)
+	if err != nil {
+		warning(nil, "can't open font file %s: %v\n", name, err)
+		return nil
+	}
+	w.fontCache[name] = f
+	return f
 }
