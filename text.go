@@ -1297,7 +1297,7 @@ func (t *Text) Select23(high draw.Image, mask uint) (q0, q1 int, buts uint) {
 }
 
 func (t *Text) Select2() (q0, q1 int, tp *Text, ret bool) {
-	q0, q1, buts := t.Select23(but2col, 4)
+	q0, q1, buts := t.Select23(t.w.but2col, 4)
 	if (buts & 4) != 0 {
 		return q0, q1, nil, false
 	}
@@ -1308,7 +1308,7 @@ func (t *Text) Select2() (q0, q1 int, tp *Text, ret bool) {
 }
 
 func (t *Text) Select3() (q0, q1 int, r bool) {
-	q0, q1, buts := t.Select23(but3col, 1|2)
+	q0, q1, buts := t.Select23(t.w.but3col, 1|2)
 	return q0, q1, buts == 0
 }
 

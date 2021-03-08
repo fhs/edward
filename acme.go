@@ -210,6 +210,8 @@ type iconImages struct {
 	textcolors [frame.NumColours]draw.Image
 	button     draw.Image
 	modbutton  draw.Image
+	but2col    draw.Image
+	but3col    draw.Image
 }
 
 func iconinit(display draw.Display, m *iconImages) {
@@ -243,8 +245,8 @@ func iconinit(display draw.Display, m *iconImages) {
 	tmp, _ := display.AllocImage(image.Rect(0, 0, 1, 1), display.ScreenImage().Pix(), true, draw.Medblue)
 	m.modbutton.Draw(r, tmp, nil, image.Point{})
 
-	but2col, _ = display.AllocImage(image.Rect(0, 0, 1, 1), display.ScreenImage().Pix(), true, 0xAA0000FF)
-	but3col, _ = display.AllocImage(image.Rect(0, 0, 1, 1), display.ScreenImage().Pix(), true, 0x006600FF)
+	m.but2col, _ = display.AllocImage(image.Rect(0, 0, 1, 1), display.ScreenImage().Pix(), true, 0xAA0000FF)
+	m.but3col, _ = display.AllocImage(image.Rect(0, 0, 1, 1), display.ScreenImage().Pix(), true, 0x006600FF)
 }
 
 func ismtpt(filename string) bool {

@@ -79,9 +79,6 @@ var (
 	tagfont string
 	mouse   *draw.Mouse
 
-	but2col draw.Image
-	but3col draw.Image
-
 	//	boxcursor Cursor
 	row     Row
 	drawDev *draw.Device
