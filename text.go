@@ -1066,9 +1066,6 @@ func (t *Text) FrameScroll(fr frame.SelectScrollUpdater, dl int) {
 var (
 	clicktext *Text
 	clickmsec uint32
-	// TODO(rjk): Replace with closure.
-	selecttext *Text
-	selectq    int
 )
 
 func (t *Text) Select() {
@@ -1081,14 +1078,12 @@ func (t *Text) Select() {
 		Paste
 	)
 
-	selecttext = t
-
 	// To have double-clicking and chording, we double-click
 	// immediately if it might make sense.
 	b := t.w.mouse.Buttons
 	q0 := t.q0
 	q1 := t.q1
-	selectq = t.org + t.fr.Charofpt(t.w.mouse.Point)
+	selectq := t.org + t.fr.Charofpt(t.w.mouse.Point)
 	//	fmt.Printf("Text.Select: mouse.Msec %v, clickmsec %v\n", mouse.Msec, clickmsec)
 	//	fmt.Printf("clicktext==t %v, (q0==q1 && selectq==q0): %v", clicktext == t, q0 == q1 && selectq == q0)
 	if (clicktext == t && t.w.mouse.Msec-clickmsec < 500) && (q0 == q1 && selectq == q0) {
