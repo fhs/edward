@@ -100,7 +100,6 @@ var (
 	activecol  *Column
 	home       string
 	acmeshell  string
-	tagcolors  [frame.NumColours]draw.Image
 	textcolors [frame.NumColours]draw.Image
 	wdir       string
 	editing    = Inactive

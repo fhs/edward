@@ -58,6 +58,8 @@ type Window struct {
 
 	keyboardctl *draw.Keyboardctl
 	mousectl    *draw.Mousectl
+
+	iconImages
 }
 
 func NewWindow() *Window {
@@ -113,7 +115,7 @@ func (w *Window) Init(clone *Window, r image.Rectangle, dis draw.Display) {
 	w.tagtop.Max.Y = r.Min.Y + fontget(tagfont, w.display).Height()
 	r1.Max.Y = r1.Min.Y + w.taglines*fontget(tagfont, w.display).Height()
 
-	w.tag.Init(r1, tagfont, tagcolors, w.display)
+	w.tag.Init(r1, tagfont, w.tagcolors, w.display)
 	w.tag.what = Tag
 
 	// tag is a copy of the contents, not a tracked image
@@ -140,7 +142,7 @@ func (w *Window) Init(clone *Window, r image.Rectangle, dis draw.Display) {
 	r1.Min.Y--
 	r1.Max.Y = r1.Min.Y + 1
 	if w.display != nil {
-		w.display.ScreenImage().Draw(r1, tagcolors[frame.ColBord], nil, image.Point{})
+		w.display.ScreenImage().Draw(r1, w.tagcolors[frame.ColBord], nil, image.Point{})
 	}
 	w.body.ScrDraw(w.body.fr.GetFrameFillStatus().Nchars)
 	w.r = r
@@ -288,7 +290,7 @@ func (w *Window) Resize(r image.Rectangle, safe, keepextra bool) int {
 			r1.Min.Y = y
 			r1.Max.Y = y + 1
 			if w.display != nil {
-				w.display.ScreenImage().Draw(r1, tagcolors[frame.ColBord], nil, image.Point{})
+				w.display.ScreenImage().Draw(r1, w.tagcolors[frame.ColBord], nil, image.Point{})
 			}
 			y++
 			r1.Min.Y = min(y, r.Max.Y)

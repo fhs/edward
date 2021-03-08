@@ -205,14 +205,18 @@ var boxcursor = draw.Cursor{
 		0x7F, 0xFE, 0x7F, 0xFE, 0x7F, 0xFE, 0x00, 0x00},
 }
 
-func iconinit(display draw.Display) {
+type iconImages struct {
+	tagcolors [frame.NumColours]draw.Image
+}
+
+func iconinit(display draw.Display, m *iconImages) {
 	//TODO(flux): Probably should de-globalize colors.
-	if tagcolors[frame.ColBack] == nil {
-		tagcolors[frame.ColBack] = display.AllocImageMix(draw.Palebluegreen, draw.White)
-		tagcolors[frame.ColHigh], _ = display.AllocImage(image.Rect(0, 0, 1, 1), display.ScreenImage().Pix(), true, draw.Palegreygreen)
-		tagcolors[frame.ColBord], _ = display.AllocImage(image.Rect(0, 0, 1, 1), display.ScreenImage().Pix(), true, draw.Purpleblue)
-		tagcolors[frame.ColText] = display.Black()
-		tagcolors[frame.ColHText] = display.Black()
+	if m.tagcolors[frame.ColBack] == nil {
+		m.tagcolors[frame.ColBack] = display.AllocImageMix(draw.Palebluegreen, draw.White)
+		m.tagcolors[frame.ColHigh], _ = display.AllocImage(image.Rect(0, 0, 1, 1), display.ScreenImage().Pix(), true, draw.Palegreygreen)
+		m.tagcolors[frame.ColBord], _ = display.AllocImage(image.Rect(0, 0, 1, 1), display.ScreenImage().Pix(), true, draw.Purpleblue)
+		m.tagcolors[frame.ColText] = display.Black()
+		m.tagcolors[frame.ColHText] = display.Black()
 		textcolors[frame.ColBack] = display.AllocImageMix(draw.Paleyellow, draw.White)
 		textcolors[frame.ColHigh], _ = display.AllocImage(image.Rect(0, 0, 1, 1), display.ScreenImage().Pix(), true, draw.Darkyellow)
 		textcolors[frame.ColBord], _ = display.AllocImage(image.Rect(0, 0, 1, 1), display.ScreenImage().Pix(), true, draw.Yellowgreen)
@@ -223,15 +227,15 @@ func iconinit(display draw.Display) {
 	// ...
 	r := image.Rect(0, 0, display.ScaleSize(Scrollwid+ButtonBorder), fontget(tagfont, display).Height()+1)
 	button, _ = display.AllocImage(r, display.ScreenImage().Pix(), false, draw.Notacolor)
-	button.Draw(r, tagcolors[frame.ColBack], nil, r.Min)
+	button.Draw(r, m.tagcolors[frame.ColBack], nil, r.Min)
 	r.Max.X -= display.ScaleSize(ButtonBorder)
-	button.Border(r, display.ScaleSize(ButtonBorder), tagcolors[frame.ColBord], image.Point{})
+	button.Border(r, display.ScaleSize(ButtonBorder), m.tagcolors[frame.ColBord], image.Point{})
 
 	r = button.R()
 	modbutton, _ = display.AllocImage(r, display.ScreenImage().Pix(), false, draw.Notacolor)
-	modbutton.Draw(r, tagcolors[frame.ColBack], nil, r.Min)
+	modbutton.Draw(r, m.tagcolors[frame.ColBack], nil, r.Min)
 	r.Max.X -= display.ScaleSize(ButtonBorder)
-	modbutton.Border(r, display.ScaleSize(ButtonBorder), tagcolors[frame.ColBord], image.Point{})
+	modbutton.Border(r, display.ScaleSize(ButtonBorder), m.tagcolors[frame.ColBord], image.Point{})
 	r = r.Inset(display.ScaleSize(ButtonBorder))
 	tmp, _ := display.AllocImage(image.Rect(0, 0, 1, 1), display.ScreenImage().Pix(), true, draw.Medblue)
 	modbutton.Draw(r, tmp, nil, image.Point{})
@@ -269,7 +273,7 @@ func mousethread(w *Window) {
 				panic("failed to attach to window")
 			}
 			display.ScreenImage().Draw(display.ScreenImage().R(), display.White(), nil, image.Point{})
-			iconinit(display)
+			iconinit(display, &w.iconImages)
 			ScrlResize(display)
 			row.Resize(display.ScreenImage().R())
 		case w.mousectl.Mouse = <-w.mousectl.C:
