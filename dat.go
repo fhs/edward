@@ -81,7 +81,6 @@ var (
 
 	modbutton draw.Image
 	colbutton draw.Image
-	button    draw.Image
 	but2col   draw.Image
 	but3col   draw.Image
 

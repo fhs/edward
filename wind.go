@@ -148,10 +148,10 @@ func (w *Window) Init(clone *Window, r image.Rectangle, dis draw.Display) {
 	w.r = r
 	var br image.Rectangle
 	br.Min = w.tag.scrollr.Min
-	br.Max.X = br.Min.X + button.R().Dx()
-	br.Max.Y = br.Min.Y + button.R().Dy()
+	br.Max.X = br.Min.X + w.button.R().Dx()
+	br.Max.Y = br.Min.Y + w.button.R().Dy()
 	if w.display != nil {
-		w.display.ScreenImage().Draw(br, button, nil, button.R().Min)
+		w.display.ScreenImage().Draw(br, w.button, nil, w.button.R().Min)
 	}
 	w.maxlines = w.body.fr.GetFrameFillStatus().Maxlines
 	if clone != nil {
@@ -161,7 +161,7 @@ func (w *Window) Init(clone *Window, r image.Rectangle, dis draw.Display) {
 }
 
 func (w *Window) DrawButton() {
-	b := button
+	b := w.button
 	if w.body.file.SaveableAndDirty() {
 		b = modbutton
 	}
