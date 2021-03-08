@@ -47,13 +47,6 @@ func (row *Row) add(_ *Column, x int) *Column {
 	return c
 }
 
-func (r *Row) WhichCol(p image.Point) *Column {
-	if len(r.col) > 0 {
-		return r.col[0]
-	}
-	return nil
-}
-
 func (row *Row) Type(w *Window, r rune, p image.Point) *Text {
 	if r == 0 {
 		r = utf8.RuneError

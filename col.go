@@ -38,20 +38,6 @@ func (c *Column) Init() *Column {
 	return c
 }
 
-// findWindowContainingY finds the window containing vertical offset y
-// and returns the Window and its index.
-// TODO(rjk): It's almost certain that we repeat this code somewhere else.
-// possibly multiple times.
-// TODO(rjk): Get rid of the index requirement?
-func (c *Column) findWindowContainingY(y int) (i int, v *Window) {
-	for i, v = range c.w {
-		if y < v.r.Max.Y {
-			return i, v
-		}
-	}
-	return len(c.w), v
-}
-
 // Add adds a window to the Column.
 // TODO(rjk): what are the args?
 func (c *Column) Add(w, clone *Window, y int) *Window {
