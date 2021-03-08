@@ -84,8 +84,7 @@ func (c *Column) Add(w, clone *Window, y int) *Window {
 	w.body.row = c.row
 
 	w.keyboardctl = display.InitKeyboard()
-	mousectl = display.InitMouse()
-	w.mousectl = mousectl
+	w.mousectl = display.InitMouse()
 	mouse = &w.mousectl.Mouse
 	go mousethread(w)
 	go keyboardthread(w)

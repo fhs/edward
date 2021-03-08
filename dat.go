@@ -77,9 +77,8 @@ var (
 	maxtab       uint // size of a tab, in units of the '0' character
 	tabexpand    bool // defines whether to expand tab to spaces
 
-	tagfont  string
-	mouse    *draw.Mouse
-	mousectl *draw.Mousectl
+	tagfont string
+	mouse   *draw.Mouse
 
 	modbutton draw.Image
 	colbutton draw.Image

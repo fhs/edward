@@ -1047,7 +1047,7 @@ func getP1(fr frame.Frame) int {
 func (t *Text) FrameScroll(fr frame.SelectScrollUpdater, dl int) {
 	if dl == 0 {
 		// TODO(rjk): Make this mechanism better? It seems unfortunate.
-		ScrSleep(100)
+		ScrSleep(100, t.w.mousectl)
 		return
 	}
 	var q0 int
