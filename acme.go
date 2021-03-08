@@ -258,7 +258,7 @@ func mousethread(w *Window) {
 			}
 			display.ScreenImage().Draw(display.ScreenImage().R(), display.White(), nil, image.Point{})
 			iconinit(display, &w.iconImages, w.fontget)
-			ScrlResize(display)
+			w.ScrlResize()
 			row.Resize(display.ScreenImage().R())
 		case w.mousectl.Mouse = <-w.mousectl.C:
 			MovedMouse(w.mousectl.Mouse)

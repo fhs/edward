@@ -1,15 +1,12 @@
 package main
 
 import (
-	"fmt"
 	"image"
 	"time"
 
 	"github.com/rjkroege/edwood/internal/draw"
 	"github.com/rjkroege/edwood/internal/frame"
 )
-
-var scrtmp draw.Image
 
 func ScrSleep(dt int, mousectl *draw.Mousectl) {
 	timer := time.NewTimer(time.Duration(dt) * time.Millisecond)
@@ -55,32 +52,19 @@ func scrpos(r image.Rectangle, p0, p1 int, tot int) image.Rectangle {
 	return q
 }
 
-func ScrlResize(display draw.Display) {
-	var err error
-	scrtmp, err = display.AllocImage(image.Rect(0, 0, 32, display.ScreenImage().R().Max.Y), display.ScreenImage().Pix(), false, draw.Nofill)
-	if err != nil {
-		panic(fmt.Sprintf("scroll alloc: %v", err))
-	}
-}
-
 func (t *Text) ScrDraw(nchars int) {
-	var (
-		r, r1, r2 image.Rectangle
-		b         draw.Image
-	)
-
 	if t.w == nil || t != &t.w.body {
 		return
 	}
-	if scrtmp == nil {
-		ScrlResize(t.display)
+	if t.w.scrtmp == nil {
+		t.w.ScrlResize()
 	}
-	r = t.scrollr
-	b = scrtmp
-	r1 = r
+	r := t.scrollr
+	b := t.w.scrtmp
+	r1 := r
 	r1.Min.X = 0
 	r1.Max.X = r.Dx()
-	r2 = scrpos(r1, t.org, t.org+nchars, t.file.Size())
+	r2 := scrpos(r1, t.org, t.org+nchars, t.file.Size())
 	if !r2.Eq(t.lastsr) {
 		t.lastsr = r2
 		// rjk is assuming that only body Text instances have scrollers.

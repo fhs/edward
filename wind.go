@@ -61,6 +61,7 @@ type Window struct {
 
 	fontCache map[string]draw.Font
 	iconImages
+	scrtmp draw.Image // scroll bar
 }
 
 func NewWindow() *Window {
@@ -720,4 +721,13 @@ func (w *Window) fontget(name string) draw.Font {
 	}
 	w.fontCache[name] = f
 	return f
+}
+
+func (w *Window) ScrlResize() {
+	d := w.display
+	m, err := d.AllocImage(image.Rect(0, 0, 32, d.ScreenImage().R().Max.Y), d.ScreenImage().Pix(), false, draw.Nofill)
+	if err != nil {
+		panic(fmt.Sprintf("scroll alloc: %v", err))
+	}
+	w.scrtmp = m
 }
