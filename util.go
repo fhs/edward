@@ -185,12 +185,7 @@ func errorwinforwin(w *Window) *Window {
 
 // Heuristic city.
 func makenewwindow(t *Text) *Window {
-	var (
-		c               *Column
-		w, bigw, emptyw *Window
-		emptyb          *Text
-		i, y, el        int
-	)
+	var c *Column
 	switch {
 	case activecol != nil:
 		c = activecol
@@ -202,37 +197,7 @@ func makenewwindow(t *Text) *Window {
 		c = row.col[len(row.col)-1]
 	}
 	activecol = c
-	if t == nil || t.w == nil || len(c.w) == 0 {
-		return c.Add(nil, nil, -1)
-	}
-
-	// find biggest window and biggest blank spot
-	emptyw = c.w[0]
-	bigw = emptyw
-	for i = 1; i < len(c.w); i++ {
-		w = c.w[i]
-		// use >= to choose one near bottom of screen
-		if w.body.fr.GetFrameFillStatus().Maxlines >= bigw.body.fr.GetFrameFillStatus().Maxlines {
-			bigw = w
-		}
-		if w.body.fr.GetFrameFillStatus().Maxlines-w.body.fr.GetFrameFillStatus().Nlines >= emptyw.body.fr.GetFrameFillStatus().Maxlines-emptyw.body.fr.GetFrameFillStatus().Nlines {
-			emptyw = w
-		}
-	}
-	emptyb = &emptyw.body
-	el = emptyb.fr.GetFrameFillStatus().Maxlines - emptyb.fr.GetFrameFillStatus().Nlines
-	// if empty space is big, use it
-	if el > 15 || (el > 3 && el > (bigw.body.fr.GetFrameFillStatus().Maxlines-1)/2) {
-		y = emptyb.fr.Rect().Min.Y + emptyb.fr.GetFrameFillStatus().Nlines*fontget(tagfont, t.display).Height()
-	} else {
-		// if this window is in column and isn't much smaller, split it
-		if t.col == c && t.w.r.Dy() > 2*bigw.r.Dy()/3 {
-			bigw = t.w
-		}
-		y = (bigw.r.Min.Y + bigw.r.Max.Y) / 2
-	}
-	w = c.Add(nil, nil, y)
-	return w
+	return c.Add(nil, nil, -1)
 }
 
 type Warning struct {
