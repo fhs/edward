@@ -261,7 +261,9 @@ func mousethread(w *Window) {
 			w.ScrlResize()
 			row.Resize(display.ScreenImage().R())
 		case w.mousectl.Mouse = <-w.mousectl.C:
-			MovedMouse(w.mousectl.Mouse)
+			m := &w.mousectl.Mouse
+			t := w.Which(m.Point)
+			MovedMouse(m, t)
 		case <-cwarn:
 			// Do nothing
 		case pm := <-cplumb:
@@ -287,11 +289,9 @@ func findattr(attr *plumb.Attribute, s string) string {
 	return ""
 }
 
-func MovedMouse(m draw.Mouse) {
+func MovedMouse(m *draw.Mouse, t *Text) {
 	row.lk.Lock()
 	defer row.lk.Unlock()
-
-	t := row.Which(m.Point)
 
 	if t != mousetext && t != nil && t.w != nil &&
 		(mousetext == nil || mousetext.w == nil || t.w.id != mousetext.w.id) {

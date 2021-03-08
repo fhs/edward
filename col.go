@@ -159,15 +159,6 @@ func (c *Column) Resize(r image.Rectangle) {
 	}
 }
 
-func (c *Column) Which(p image.Point) *Text {
-	for _, w := range c.w {
-		if p.In(w.r) {
-			return w.Which(p)
-		}
-	}
-	return nil
-}
-
 func (c *Column) Clean() bool {
 	clean := true
 	for _, w := range c.w {

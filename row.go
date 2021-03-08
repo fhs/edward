@@ -61,14 +61,6 @@ func (r *Row) WhichCol(p image.Point) *Column {
 	return nil
 }
 
-func (r *Row) Which(p image.Point) *Text {
-	c := row.WhichCol(p)
-	if c != nil {
-		return c.Which(p)
-	}
-	return nil
-}
-
 func (row *Row) Type(w *Window, r rune, p image.Point) *Text {
 	if r == 0 {
 		r = utf8.RuneError

@@ -58,11 +58,11 @@ type Window struct {
 
 	keyboardctl *draw.Keyboardctl
 	mousectl    *draw.Mousectl
+	mouse       *draw.Mouse // == &mousectl.Mouse
 
 	fontCache map[string]draw.Font
 	iconImages
 	scrtmp draw.Image // scroll bar
-	mouse  *draw.Mouse
 }
 
 func NewWindow() *Window {
