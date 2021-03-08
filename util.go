@@ -52,7 +52,7 @@ func clearmouse() {
 }
 
 func savemouse(w *Window) {
-	prevmouse = mouse.Point
+	prevmouse = w.mouse.Point
 	mousew = w
 }
 

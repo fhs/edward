@@ -77,7 +77,6 @@ var (
 	tabexpand    bool // defines whether to expand tab to spaces
 
 	tagfont string
-	mouse   *draw.Mouse
 
 	//	boxcursor Cursor
 	row     Row

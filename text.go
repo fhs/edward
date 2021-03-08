@@ -1085,34 +1085,34 @@ func (t *Text) Select() {
 
 	// To have double-clicking and chording, we double-click
 	// immediately if it might make sense.
-	b := mouse.Buttons
+	b := t.w.mouse.Buttons
 	q0 := t.q0
 	q1 := t.q1
-	selectq = t.org + t.fr.Charofpt(mouse.Point)
+	selectq = t.org + t.fr.Charofpt(t.w.mouse.Point)
 	//	fmt.Printf("Text.Select: mouse.Msec %v, clickmsec %v\n", mouse.Msec, clickmsec)
 	//	fmt.Printf("clicktext==t %v, (q0==q1 && selectq==q0): %v", clicktext == t, q0 == q1 && selectq == q0)
-	if (clicktext == t && mouse.Msec-clickmsec < 500) && (q0 == q1 && selectq == q0) {
+	if (clicktext == t && t.w.mouse.Msec-clickmsec < 500) && (q0 == q1 && selectq == q0) {
 		q0, q1 = t.DoubleClick(q0, q1)
 		t.SetSelect(q0, q1)
 		t.display.Flush()
-		x := mouse.Point.X
-		y := mouse.Point.Y
+		x := t.w.mouse.Point.X
+		y := t.w.mouse.Point.Y
 		// stay here until something interesting happens
 		// TODO(rjk): Ack. This is horrible? Layering violation?
 		for {
 			t.w.mousectl.Read()
-			if !(mouse.Buttons == b && abs(mouse.Point.X-x) < 3 && abs(mouse.Point.Y-y) < 3) {
+			if !(t.w.mouse.Buttons == b && abs(t.w.mouse.Point.X-x) < 3 && abs(t.w.mouse.Point.Y-y) < 3) {
 				break
 			}
 		}
-		mouse.Point.X = x // in case we're calling frselect
-		mouse.Point.Y = y
+		t.w.mouse.Point.X = x // in case we're calling frselect
+		t.w.mouse.Point.Y = y
 		q0 = t.q0 // may have changed
 		q1 = t.q1
 		selectq = q0
 	}
-	if mouse.Buttons == b {
-		sP0, sP1 := t.fr.Select(t.w.mousectl, mouse, func(fr frame.SelectScrollUpdater, dl int) { t.FrameScroll(fr, dl) })
+	if t.w.mouse.Buttons == b {
+		sP0, sP1 := t.fr.Select(t.w.mousectl, t.w.mouse, func(fr frame.SelectScrollUpdater, dl int) { t.FrameScroll(fr, dl) })
 
 		// horrible botch: while asleep, may have lost selection altogether
 		if selectq > t.file.Size() {
@@ -1130,12 +1130,12 @@ func (t *Text) Select() {
 		}
 	}
 	if q0 == q1 {
-		if q0 == t.q0 && clicktext == t && mouse.Msec-clickmsec < 500 {
+		if q0 == t.q0 && clicktext == t && t.w.mouse.Msec-clickmsec < 500 {
 			q0, q1 = t.DoubleClick(q0, q1)
 			clicktext = nil
 		} else {
 			clicktext = t
-			clickmsec = mouse.Msec
+			clickmsec = t.w.mouse.Msec
 		}
 	} else {
 		clicktext = nil
@@ -1143,9 +1143,9 @@ func (t *Text) Select() {
 	t.SetSelect(q0, q1)
 	t.display.Flush()
 	state := None // what we've done; undo when possible
-	for mouse.Buttons != 0 {
-		mouse.Msec = 0
-		b := mouse.Buttons
+	for t.w.mouse.Buttons != 0 {
+		t.w.mouse.Msec = 0
+		b := t.w.mouse.Buttons
 		if (b&1) != 0 && (b&6) != 0 {
 			if state == None && t.what == Body {
 				seq++
@@ -1178,7 +1178,7 @@ func (t *Text) Select() {
 			clearmouse()
 		}
 		t.display.Flush()
-		for mouse.Buttons == b {
+		for t.w.mouse.Buttons == b {
 			t.w.mousectl.Read()
 		}
 		clicktext = nil
@@ -1283,7 +1283,7 @@ func (t *Text) SetSelect(q0, q1 int) {
 // TODO(rjk): The implicit initialization of q0, q1 doesn't seem like very nice
 // style? Maybe it is idiomatic?
 func (t *Text) Select23(high draw.Image, mask uint) (q0, q1 int, buts uint) {
-	p0, p1 := t.fr.SelectOpt(t.w.mousectl, mouse, func(frame.SelectScrollUpdater, int) {}, t.display.White(), high)
+	p0, p1 := t.fr.SelectOpt(t.w.mousectl, t.w.mouse, func(frame.SelectScrollUpdater, int) {}, t.display.White(), high)
 
 	buts = uint(t.w.mousectl.Mouse.Buttons)
 	if (buts & mask) == 0 {

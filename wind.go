@@ -62,6 +62,7 @@ type Window struct {
 	fontCache map[string]draw.Font
 	iconImages
 	scrtmp draw.Image // scroll bar
+	mouse  *draw.Mouse
 }
 
 func NewWindow() *Window {
@@ -245,8 +246,8 @@ func (w *Window) Resize(r image.Rectangle, safe, keepextra bool) int {
 	// defer log.Println("Window.Resize End\n")
 
 	// TODO(rjk): Do not leak global event state into this function.
-	mouseintag := mouse.Point.In(w.tag.all)
-	mouseinbody := mouse.Point.In(w.body.all)
+	mouseintag := w.mouse.Point.In(w.tag.all)
+	mouseinbody := w.mouse.Point.In(w.body.all)
 
 	// Tagtop is a rectangle corresponding to one line of tag.
 	w.tagtop = r
@@ -270,16 +271,16 @@ func (w *Window) Resize(r image.Rectangle, safe, keepextra bool) int {
 		w.tagsafe = true
 
 		// If mouse is in tag, pull up as tag closes.
-		if mouseintag && !mouse.Point.In(w.tag.all) {
-			p := mouse.Point
+		if mouseintag && !w.mouse.Point.In(w.tag.all) {
+			p := w.mouse.Point
 			p.Y = w.tag.all.Max.Y - 3
 			if w.display != nil {
 				w.display.MoveTo(p)
 			}
 		}
 		// If mouse is in body, push down as tag expands.
-		if mouseinbody && mouse.Point.In(w.tag.all) {
-			p := mouse.Point
+		if mouseinbody && w.mouse.Point.In(w.tag.all) {
+			p := w.mouse.Point
 			p.Y = w.tag.all.Max.Y + 3
 			if w.display != nil {
 				w.display.MoveTo(p)

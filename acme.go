@@ -427,7 +427,7 @@ func keyboardthread(w *Window) {
 			}
 		case r := <-keyboardctl.C:
 			for {
-				typetext = row.Type(w, r, mouse.Point)
+				typetext = row.Type(w, r, w.mouse.Point)
 				t = typetext
 				if t != nil && t.col != nil && !(r == draw.KeyDown || r == draw.KeyLeft || r == draw.KeyRight) { // scrolling doesn't change activecol
 					activecol = t.col
