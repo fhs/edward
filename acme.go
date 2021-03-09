@@ -247,12 +247,18 @@ func mousethread(w *Window) {
 
 	display := w.display
 	for {
+		var ok bool
 		row.lk.Lock()
 		flushwarnings()
 		row.lk.Unlock()
 		display.Flush()
 		select {
-		case <-w.mousectl.Resize:
+		case <-w.done:
+			return
+		case _, ok = <-w.mousectl.Resize:
+			if !ok {
+				return
+			}
 			if err := display.Attach(draw.Refnone); err != nil {
 				panic("failed to attach to window")
 			}
@@ -264,7 +270,10 @@ func mousethread(w *Window) {
 				w.maxlines = 0
 				w.Resize(display.ScreenImage().R(), false, true)
 			}
-		case w.mousectl.Mouse = <-w.mousectl.C:
+		case w.mousectl.Mouse, ok = <-w.mousectl.C:
+			if !ok {
+				return
+			}
 			m := &w.mousectl.Mouse
 			t := w.Which(m.Point)
 			MovedMouse(m, t)
@@ -421,6 +430,8 @@ func keyboardthread(w *Window) {
 	typetext := (*Text)(nil)
 	for {
 		select {
+		case <-w.done:
+			return
 		case <-timerchan:
 			t = typetext
 			if t != nil && t.what == Tag {
@@ -429,7 +440,10 @@ func keyboardthread(w *Window) {
 				t.w.Unlock()
 				display.Flush()
 			}
-		case r := <-keyboardctl.C:
+		case r, ok := <-keyboardctl.C:
+			if !ok {
+				return
+			}
 			for {
 				typetext = row.Type(w, r, w.mouse.Point)
 				t = typetext

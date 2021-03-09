@@ -56,6 +56,7 @@ type Window struct {
 	tagtop      image.Rectangle
 	editoutlk   chan bool
 
+	done        chan struct{} // we close this when the window is closing
 	keyboardctl *draw.Keyboardctl
 	mousectl    *draw.Mousectl
 	mouse       *draw.Mouse // == &mousectl.Mouse
@@ -67,6 +68,7 @@ type Window struct {
 
 func NewWindow() *Window {
 	return &Window{
+		done:      make(chan struct{}),
 		fontCache: make(map[string]draw.Font),
 	}
 }
@@ -388,6 +390,8 @@ func (w *Window) Close() {
 		if activewin == w {
 			activewin = nil
 		}
+		close(w.done)
+		w.display.Close()
 	}
 }
 

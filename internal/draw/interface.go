@@ -21,6 +21,7 @@ type Display interface {
 	WriteSnarf(data []byte) error
 	MoveTo(pt image.Point) error
 	SetCursor(c *Cursor) error
+	Close() error
 }
 
 type Image interface {

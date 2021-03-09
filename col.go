@@ -103,7 +103,6 @@ Found:
 	}
 	c.w = append(c.w[:i], c.w[i+1:]...)
 	if len(c.w) == 0 {
-		log.Panicf("closing window is not implemented")
 		return
 	}
 	up := false
