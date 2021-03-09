@@ -33,7 +33,7 @@ var (
 	fixedfontflag     = flag.String("F", defaultFixedFont, "Fixed-width font")
 	mtpt              = flag.String("m", defaultMtpt, "Mountpoint for 9P file server")
 	swapScrollButtons = flag.Bool("r", false, "Swap scroll buttons")
-	winsize           = flag.String("W", "1024x768", "Window size and position as WidthxHeight[@X,Y]")
+	winsize           = flag.String("W", "", "Window size and position as WidthxHeight[@X,Y]")
 )
 
 func main() {
