@@ -4,7 +4,6 @@ package main
 // row/column/window model.
 
 import (
-	"image"
 	"strings"
 
 	"github.com/rjkroege/edwood/internal/draw"
@@ -15,12 +14,6 @@ import (
 // configureGlobals setups global variables so that Edwood can operate on
 // a scaffold model.
 func configureGlobals() {
-	// TODO(rjk): Make a proper mock draw.Mouse in edwoodtest.
-	mouse = new(draw.Mouse)
-	button = edwoodtest.NewImage(image.Rect(0, 0, 10, 10))
-	modbutton = edwoodtest.NewImage(image.Rect(0, 0, 10, 10))
-	colbutton = edwoodtest.NewImage(image.Rect(0, 0, 10, 10))
-
 	// Set up Undo to make sure that we see undoable results.
 	// By default, post-load, file.seq, file.putseq = 0, 0.
 	seq = 1
@@ -46,14 +39,11 @@ func MakeWindowScaffold(content *dumpfile.Content) {
 	display := edwoodtest.NewDisplay()
 	seq = 0
 
-	row = Row{
-		display: display,
-	}
+	row = Row{}
 
 	cols := make([]*Column, 0, len(content.Columns))
 	for range content.Columns {
 		col := &Column{
-			display: display,
 			fortest: true,
 			w:       make([]*Window, 0),
 		}

@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"image"
 	"io/ioutil"
 	"math"
 	"os"
@@ -16,9 +15,7 @@ import (
 	"9fans.net/go/plan9"
 	"9fans.net/go/plan9/client"
 	"github.com/google/go-cmp/cmp"
-	"github.com/rjkroege/edwood/internal/draw"
 	"github.com/rjkroege/edwood/internal/dumpfile"
-	"github.com/rjkroege/edwood/internal/edwoodtest"
 )
 
 const gopherEdwoodDir = "/home/gopher/go/src/edwood"
@@ -431,15 +428,10 @@ func jsonEscapePath(s string) string {
 
 func setGlobalsForLoadTesting() {
 	WinID = 0 // reset
-	colbutton = edwoodtest.NewImage(image.Rectangle{})
-	button = edwoodtest.NewImage(image.Rectangle{})
-	modbutton = edwoodtest.NewImage(image.Rectangle{})
-	mouse = &draw.Mouse{}
 	maxtab = 4
 
-	display := edwoodtest.NewDisplay()
 	row = Row{} // reset
-	row.Init(display.ScreenImage().R(), display)
+	row.Init(&dumpfile.Content{}, "")
 }
 
 func replacePathsForTesting(t *testing.T, b []byte, isJSON bool) []byte {

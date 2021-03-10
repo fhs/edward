@@ -7,8 +7,6 @@ import (
 	"reflect"
 	"testing"
 	"time"
-
-	"github.com/rjkroege/edwood/internal/edwoodtest"
 )
 
 func TestIsmtpt(t *testing.T) {
@@ -210,9 +208,7 @@ func startMockWaitthread(ctx context.Context) (done <-chan struct{}) {
 	cerr = make(chan error)
 	cedit = make(chan int)
 	warnings = nil
-	row = Row{
-		display: edwoodtest.NewDisplay(),
-	}
+	row = Row{}
 	ch := make(chan struct{})
 	go func() {
 		waitthread(ctx)

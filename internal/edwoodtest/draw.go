@@ -39,6 +39,7 @@ func (d *mockDisplay) AllocImageMix(color1, color3 draw.Color) draw.Image {
 func (d *mockDisplay) Attach(ref int) error { return nil }
 func (d *mockDisplay) Flush() error         { return nil }
 func (d *mockDisplay) ScaleSize(n int) int  { return 0 }
+func (d *mockDisplay) Close() error         { return nil }
 
 // ReadSnarf reads the snarf buffer into buf, returning the number of bytes read,
 // the total size of the snarf buffer (useful if buf is too short), and any
