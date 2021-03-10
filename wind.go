@@ -383,6 +383,9 @@ func (w *Window) MouseBut() {
 
 func (w *Window) Close() {
 	if w.ref.Dec() == 0 {
+		// Ask mousethread and keyboardthread to finish up.
+		close(w.done)
+
 		xfidlog(w, "del")
 		//		w.DirFree()
 		w.tag.Close()
@@ -390,7 +393,6 @@ func (w *Window) Close() {
 		if activewin == w {
 			activewin = nil
 		}
-		close(w.done)
 		w.display.Close()
 	}
 }
