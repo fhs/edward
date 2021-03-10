@@ -4,8 +4,8 @@ import (
 	"image"
 	"log"
 
-	"github.com/rjkroege/edwood/internal/draw"
-	"github.com/rjkroege/edwood/internal/frame"
+	"github.com/fhs/edward/internal/draw"
+	"github.com/fhs/edward/internal/frame"
 )
 
 var (
@@ -41,7 +41,7 @@ func (c *Column) Init() *Column {
 // Add adds a window to the Column.
 // TODO(rjk): what are the args?
 func (c *Column) Add(w, clone *Window, y int) *Window {
-	display, err := drawDev.NewDisplay(nil, *varfontflag, "edwood", *winsize)
+	display, err := drawDev.NewDisplay(nil, *varfontflag, "edward", *winsize)
 	if err != nil {
 		log.Fatalf("can't open display: %v\n", err)
 	}

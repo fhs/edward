@@ -14,8 +14,8 @@ import (
 
 	"9fans.net/go/plan9"
 	"9fans.net/go/plan9/client"
+	"github.com/fhs/edward/internal/dumpfile"
 	"github.com/google/go-cmp/cmp"
-	"github.com/rjkroege/edwood/internal/dumpfile"
 )
 
 const gopherEdwoodDir = "/home/gopher/go/src/edwood"

@@ -15,8 +15,8 @@ import (
 
 	"9fans.net/go/plan9"
 	"9fans.net/go/plan9/client"
-	"github.com/rjkroege/edwood/internal/file"
-	"github.com/rjkroege/edwood/internal/frame"
+	"github.com/fhs/edward/internal/file"
+	"github.com/fhs/edward/internal/frame"
 )
 
 type Exectab struct {

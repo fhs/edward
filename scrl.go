@@ -4,8 +4,8 @@ import (
 	"image"
 	"time"
 
-	"github.com/rjkroege/edwood/internal/draw"
-	"github.com/rjkroege/edwood/internal/frame"
+	"github.com/fhs/edward/internal/draw"
+	"github.com/fhs/edward/internal/frame"
 )
 
 func ScrSleep(dt int, mousectl *draw.Mousectl) {

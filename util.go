@@ -9,7 +9,7 @@ import (
 	"sync"
 	"unicode/utf8"
 
-	"github.com/rjkroege/edwood/internal/runes"
+	"github.com/fhs/edward/internal/runes"
 )
 
 func min(a, b int) int {

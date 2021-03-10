@@ -6,9 +6,9 @@ package main
 import (
 	"strings"
 
-	"github.com/rjkroege/edwood/internal/draw"
-	"github.com/rjkroege/edwood/internal/dumpfile"
-	"github.com/rjkroege/edwood/internal/edwoodtest"
+	"github.com/fhs/edward/internal/draw"
+	"github.com/fhs/edward/internal/dumpfile"
+	"github.com/fhs/edward/internal/edwoodtest"
 )
 
 // configureGlobals setups global variables so that Edwood can operate on

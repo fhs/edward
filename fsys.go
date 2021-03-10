@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"9fans.net/go/plan9"
-	"github.com/rjkroege/edwood/internal/ninep"
+	"github.com/fhs/edward/internal/ninep"
 )
 
 type fileServer struct {

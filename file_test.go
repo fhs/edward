@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/rjkroege/edwood/internal/file"
+	"github.com/fhs/edward/internal/file"
 )
 
 func TestDelText(t *testing.T) {

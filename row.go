@@ -11,7 +11,7 @@ import (
 	"sync"
 	"unicode/utf8"
 
-	"github.com/rjkroege/edwood/internal/dumpfile"
+	"github.com/fhs/edward/internal/dumpfile"
 )
 
 const RowTag = "Newcol Kill Putall Dump Exit "

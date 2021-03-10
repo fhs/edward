@@ -10,8 +10,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/fhs/edward/internal/frame"
 	"github.com/google/go-cmp/cmp"
-	"github.com/rjkroege/edwood/internal/frame"
 )
 
 func emptyText() *Text {

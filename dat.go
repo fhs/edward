@@ -7,7 +7,7 @@ import (
 
 	"9fans.net/go/plan9"
 	"9fans.net/go/plumb"
-	"github.com/rjkroege/edwood/internal/draw"
+	"github.com/fhs/edward/internal/draw"
 )
 
 // These constants are used to identify a file in the file server.

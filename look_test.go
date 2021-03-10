@@ -9,8 +9,8 @@ import (
 	"testing"
 
 	"9fans.net/go/plumb"
+	"github.com/fhs/edward/internal/runes"
 	"github.com/google/go-cmp/cmp"
-	"github.com/rjkroege/edwood/internal/runes"
 )
 
 func TestExpand(t *testing.T) {

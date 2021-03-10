@@ -18,9 +18,9 @@ import (
 	"time"
 
 	"9fans.net/go/plumb"
-	"github.com/rjkroege/edwood/internal/draw"
-	"github.com/rjkroege/edwood/internal/dumpfile"
-	"github.com/rjkroege/edwood/internal/frame"
+	"github.com/fhs/edward/internal/draw"
+	"github.com/fhs/edward/internal/dumpfile"
+	"github.com/fhs/edward/internal/frame"
 )
 
 var (

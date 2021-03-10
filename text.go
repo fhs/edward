@@ -12,11 +12,11 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/rjkroege/edwood/internal/complete"
-	"github.com/rjkroege/edwood/internal/draw"
-	"github.com/rjkroege/edwood/internal/draw/drawutil"
-	"github.com/rjkroege/edwood/internal/frame"
-	"github.com/rjkroege/edwood/internal/runes"
+	"github.com/fhs/edward/internal/complete"
+	"github.com/fhs/edward/internal/draw"
+	"github.com/fhs/edward/internal/draw/drawutil"
+	"github.com/fhs/edward/internal/frame"
+	"github.com/fhs/edward/internal/runes"
 )
 
 const (

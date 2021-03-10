@@ -6,8 +6,8 @@ import (
 	"testing"
 	"unicode/utf8"
 
-	"github.com/rjkroege/edwood/internal/draw"
-	"github.com/rjkroege/edwood/internal/edwoodtest"
+	"github.com/fhs/edward/internal/draw"
+	"github.com/fhs/edward/internal/edwoodtest"
 )
 
 const fixedwidth = 10

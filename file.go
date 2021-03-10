@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/rjkroege/edwood/internal/file"
+	"github.com/fhs/edward/internal/file"
 )
 
 // File is an editable text buffer with undo. Many Text can share one

@@ -14,9 +14,9 @@ import (
 	"testing"
 
 	"9fans.net/go/plan9"
+	"github.com/fhs/edward/internal/dumpfile"
+	"github.com/fhs/edward/internal/edwoodtest"
 	"github.com/google/go-cmp/cmp"
-	"github.com/rjkroege/edwood/internal/dumpfile"
-	"github.com/rjkroege/edwood/internal/edwoodtest"
 )
 
 func TestXfidallocthread(t *testing.T) {
