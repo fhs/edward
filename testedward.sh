@@ -2,5 +2,6 @@
 
 mkdir -p /tmp/testedward
 export NAMESPACE=/tmp/testedward
-./edward -validateboxes $*
+9 plumber &
+./edward -validateboxes -debug localhost:2021 $*
 
