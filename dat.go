@@ -89,7 +89,6 @@ var (
 	barttext  *Text // shared between mousethread and keyboardthread
 
 	activewin *Window
-	activecol *Column
 	home      string
 	acmeshell string
 	wdir      string

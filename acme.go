@@ -373,9 +373,6 @@ func MovedMouse(m *draw.Mouse, t *Text) {
 					barttext = &t.w.body
 				}
 			}
-			if t.col != nil {
-				activecol = t.col
-			}
 		}
 		return
 	}
@@ -399,9 +396,6 @@ func MovedMouse(m *draw.Mouse, t *Text) {
 			}
 			argtext = t
 			seltext = t
-			if t.col != nil {
-				activecol = t.col // button 1 only
-			}
 			if t.w != nil && t == &t.w.body {
 				activewin = t.w
 			}
@@ -447,9 +441,6 @@ func keyboardthread(w *Window) {
 			for {
 				typetext = row.Type(w, r, w.mouse.Point)
 				t = typetext
-				if t != nil && t.col != nil && !(r == draw.KeyDown || r == draw.KeyLeft || r == draw.KeyRight) { // scrolling doesn't change activecol
-					activecol = t.col
-				}
 				if t != nil && t.w != nil {
 					// In a set of zeroxes, the last typed-in body becomes the curtext.
 					t.w.body.file.curtext = &t.w.body

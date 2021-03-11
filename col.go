@@ -123,9 +123,6 @@ Found:
 }
 
 func (c *Column) CloseAll() {
-	if c == activecol {
-		activecol = nil
-	}
 	for _, w := range c.w {
 		w.Close()
 	}

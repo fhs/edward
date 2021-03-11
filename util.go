@@ -183,20 +183,8 @@ func errorwinforwin(w *Window) *Window {
 	return w
 }
 
-// Heuristic city.
 func makenewwindow(t *Text) *Window {
-	var c *Column
-	switch {
-	case activecol != nil:
-		c = activecol
-	case seltext != nil && seltext.col != nil:
-		c = seltext.col
-	case t != nil && t.col != nil:
-		c = t.col
-	default:
-		c = row.col[len(row.col)-1]
-	}
-	activecol = c
+	c := row.col[0]
 	return c.Add(nil, nil, -1)
 }
 
