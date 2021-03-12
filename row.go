@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"image"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -18,33 +17,23 @@ const RowTag = "Newcol Kill Putall Dump Exit "
 
 type Row struct {
 	lk  sync.Mutex
-	col []*Column
+	col Column
 }
 
 func (row *Row) Init(dump *dumpfile.Content, loadfile string) *Row {
 	if row == nil {
 		row = &Row{}
 	}
-	row.col = []*Column{}
-	row.add(nil, -1) // we only support one column
+	// we only support one column
+	c := &row.col
+	c.Init()
+	c.row = row
+	clearmouse()
 
 	if loadfile == "" || row.Load(dump, loadfile) != nil {
 		readArgFiles(flag.Args())
 	}
 	return row
-}
-
-func (row *Row) add(_ *Column, x int) *Column {
-	if len(row.col) > 0 {
-		log.Panicf("cannot create more than one column")
-	}
-
-	c := &Column{}
-	c.Init()
-	c.row = row
-	row.col = []*Column{c}
-	clearmouse()
-	return c
 }
 
 func (row *Row) Type(w *Window, r rune, p image.Point) *Text {
@@ -84,18 +73,10 @@ func (row *Row) Type(w *Window, r rune, p image.Point) *Text {
 }
 
 func (row *Row) Clean() bool {
-	clean := true
-	for _, col := range row.col {
-		clean = clean && col.Clean()
-	}
-	return clean
+	return row.col.Clean()
 }
 
 func (r *Row) Dump(file string) error {
-	if len(r.col) == 0 {
-		return nil
-	}
-
 	if file == "" {
 		f, err := defaultDumpFile()
 		if err != nil {
@@ -129,86 +110,82 @@ func (r *Row) dump() (*dumpfile.Content, error) {
 			Q0:     0,
 			Q1:     0,
 		},
-		Columns: make([]dumpfile.Column, len(r.col)),
+		Columns: []dumpfile.Column{
+			{
+				Position: 0,
+				Tag: dumpfile.Text{
+					Buffer: string(Lheader),
+					Q0:     0,
+					Q1:     0,
+				},
+			},
+		},
 		Windows: nil,
 	}
 
 	dumpid := make(map[*File]int)
-
-	for i, c := range r.col {
-		dump.Columns[i] = dumpfile.Column{
-			Position: 0,
-			Tag: dumpfile.Text{
-				Buffer: string(Lheader),
-				Q0:     0,
-				Q1:     0,
-			},
-		}
-		for _, w := range c.w {
-			if w.nopen[QWevent] != 0 {
-				// Mark zeroxes of external windows specially.
-				dumpid[w.body.file] = -1
-			}
+	for _, w := range r.col.w {
+		if w.nopen[QWevent] != 0 {
+			// Mark zeroxes of external windows specially.
+			dumpid[w.body.file] = -1
 		}
 	}
 
-	for i, c := range r.col {
-		for _, w := range c.w {
-			// Do we need to Commit on the other tags?
-			w.Commit(&w.tag)
-			t := &w.body
+	for _, w := range r.col.w {
+		// Do we need to Commit on the other tags?
+		w.Commit(&w.tag)
+		t := &w.body
 
-			// External windows can't be recreated so skip them.
-			if w.nopen[QWevent] > 0 {
-				if w.dumpstr == "" {
-					continue
-				}
-			}
-
-			// zeroxes of external windows are tossed
-			if dumpid[t.file] < 0 && w.nopen[QWevent] == 0 {
+		// External windows can't be recreated so skip them.
+		if w.nopen[QWevent] > 0 {
+			if w.dumpstr == "" {
 				continue
 			}
+		}
 
-			// We always include the font name.
-			fontname := t.font
+		// zeroxes of external windows are tossed
+		if dumpid[t.file] < 0 && w.nopen[QWevent] == 0 {
+			continue
+		}
 
-			dump.Windows = append(dump.Windows, &dumpfile.Window{
-				Column: i,
-				Body: dumpfile.Text{
-					Buffer: "", // filled in later if Unsaved
-					Q0:     w.body.q0,
-					Q1:     w.body.q1,
-				},
-				Position: 0,
-				Font:     fontname,
-			})
-			dw := dump.Windows[len(dump.Windows)-1]
+		// We always include the font name.
+		fontname := t.font
 
-			switch {
-			case dumpid[t.file] > 0:
-				dw.Type = dumpfile.Zerox
+		dump.Windows = append(dump.Windows, &dumpfile.Window{
+			Column: 0,
+			Body: dumpfile.Text{
+				Buffer: "", // filled in later if Unsaved
+				Q0:     w.body.q0,
+				Q1:     w.body.q1,
+			},
+			Position: 0,
+			Font:     fontname,
+		})
+		dw := dump.Windows[len(dump.Windows)-1]
 
-			case w.dumpstr != "":
-				dw.Type = dumpfile.Exec
-				dw.ExecDir = w.dumpdir
-				dw.ExecCommand = w.dumpstr
+		switch {
+		case dumpid[t.file] > 0:
+			dw.Type = dumpfile.Zerox
 
-			case !w.body.file.Dirty() && access(t.file.name) || w.body.file.IsDir():
-				dumpid[t.file] = w.id
-				dw.Type = dumpfile.Saved
+		case w.dumpstr != "":
+			dw.Type = dumpfile.Exec
+			dw.ExecDir = w.dumpdir
+			dw.ExecCommand = w.dumpstr
 
-			default:
-				dumpid[t.file] = w.id
-				// TODO(rjk): Conceivably this is a bit of a layering violation?
-				dw.Type = dumpfile.Unsaved
-				dw.Body.Buffer = string(t.file.b)
-			}
-			dw.Tag = dumpfile.Text{
-				Buffer: string(w.tag.file.b),
-				Q0:     w.tag.q0,
-				Q1:     w.tag.q1,
-			}
+		case !w.body.file.Dirty() && access(t.file.name) || w.body.file.IsDir():
+			dumpid[t.file] = w.id
+			dw.Type = dumpfile.Saved
+
+		default:
+			dumpid[t.file] = w.id
+			// TODO(rjk): Conceivably this is a bit of a layering violation?
+			dw.Type = dumpfile.Unsaved
+			dw.Body.Buffer = string(t.file.b)
+		}
+		dw.Tag = dumpfile.Text{
+			Buffer: string(w.tag.file.b),
+			Q0:     w.tag.q0,
+			Q1:     w.tag.q1,
 		}
 	}
 	return dump, nil
@@ -218,12 +195,7 @@ func (r *Row) dump() (*dumpfile.Content, error) {
 // types.
 func (row *Row) loadhelper(win *dumpfile.Window) error {
 	// Column for this window.
-	i := win.Column
-
-	if i >= len(row.col) { // Didn't we already make sure that we have a column?
-		i = len(row.col) - 1
-	}
-	c := row.col[i]
+	c := &row.col
 	y := -1
 
 	subl := strings.SplitN(win.Tag.Buffer, " ", 2)
@@ -365,19 +337,15 @@ func (row *Row) loadimpl(dump *dumpfile.Content) error {
 }
 
 func (r *Row) AllWindows(f func(*Window)) {
-	for _, c := range r.col {
-		for _, w := range c.w {
-			f(w)
-		}
+	for _, w := range r.col.w {
+		f(w)
 	}
 }
 
 func (r *Row) LookupWin(id int) *Window {
-	for _, c := range r.col {
-		for _, w := range c.w {
-			if w.id == id {
-				return w
-			}
+	for _, w := range r.col.w {
+		if w.id == id {
+			return w
 		}
 	}
 	return nil

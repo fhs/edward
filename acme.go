@@ -153,7 +153,7 @@ func main() {
 
 // readArgFiles opens the files from the command line.
 func readArgFiles(files []string) {
-	col := row.col[0]
+	col := &row.col
 	if len(files) == 0 {
 		readfile(col, wdir)
 	} else {

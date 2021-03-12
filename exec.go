@@ -551,19 +551,17 @@ func put(et *Text, _0 *Text, argt *Text, _1 bool, _2 bool, arg string) {
 }
 
 func putall(et, _, _ *Text, _, _ bool, arg string) {
-	for _, col := range row.col {
-		for _, w := range col.w {
-			if w.nopen[QWevent] > 0 {
-				continue
-			}
-			a := w.body.file.name
-			if w.body.file.SaveableAndDirty() {
-				if _, err := os.Stat(a); err != nil {
-					warning(nil, "no auto-Put of %s: %v\n", a, err)
-				} else {
-					w.Commit(&w.body)
-					put(&w.body, nil, nil, false, false, "")
-				}
+	for _, w := range row.col.w {
+		if w.nopen[QWevent] > 0 {
+			continue
+		}
+		a := w.body.file.name
+		if w.body.file.SaveableAndDirty() {
+			if _, err := os.Stat(a); err != nil {
+				warning(nil, "no auto-Put of %s: %v\n", a, err)
+			} else {
+				w.Commit(&w.body)
+				put(&w.body, nil, nil, false, false, "")
 			}
 		}
 	}
@@ -592,14 +590,12 @@ func undo(et *Text, _ *Text, _ *Text, flag1, _ bool, _ string) {
 	// in the same file will not call show() and jump to a different location in the file.
 	// Simultaneous changes to other files will be chaotic, however.
 	et.w.Undo(flag1)
-	for _, c := range row.col {
-		for _, w := range c.w {
-			if w == et.w {
-				continue
-			}
-			if seqof(w, flag1) == seq {
-				w.Undo(flag1)
-			}
+	for _, w := range row.col.w {
+		if w == et.w {
+			continue
+		}
+		if seqof(w, flag1) == seq {
+			w.Undo(flag1)
 		}
 	}
 }

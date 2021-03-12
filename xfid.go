@@ -52,19 +52,17 @@ func xfidflush(x *Xfid) {
 	// search windows for matching tag
 	row.lk.Lock()
 	defer row.lk.Unlock()
-	for _, c := range row.col {
-		for _, w := range c.w {
-			w.Lock('E')
-			wx := w.eventx
-			if wx != nil && wx.fcall.Tag == x.fcall.Oldtag {
-				w.eventx = nil
-				wx.flushed = true
-				wx.c <- nil
-				w.Unlock()
-				goto out
-			}
+	for _, w := range row.col.w {
+		w.Lock('E')
+		wx := w.eventx
+		if wx != nil && wx.fcall.Tag == x.fcall.Oldtag {
+			w.eventx = nil
+			wx.flushed = true
+			wx.c <- nil
 			w.Unlock()
+			goto out
 		}
+		w.Unlock()
 	}
 out:
 	x.respond(&plan9.Fcall{}, nil)
@@ -958,32 +956,28 @@ func xfidindexread(x *Xfid) {
 
 	row.lk.Lock()
 	nmax := 0
-	for _, c := range row.col {
-		for _, w := range c.w {
-			nmax += Ctlsize + w.tag.Nc()*utf8.UTFMax + 1
-		}
+	for _, w := range row.col.w {
+		nmax += Ctlsize + w.tag.Nc()*utf8.UTFMax + 1
 	}
 
 	nmax++
 	var sb strings.Builder
-	for _, c := range row.col {
-		for _, w := range c.w {
-			// only show the currently active window of a set
-			if w.body.file.curtext != &w.body {
-				continue
-			}
-			sb.WriteString(w.CtlPrint(false))
-			m := min(BUFSIZE/utf8.UTFMax, w.tag.Nc())
-			tag := make([]rune, m)
-			w.tag.file.b.Read(0, tag)
-
-			// We only include first line of a multi-line tag
-			if i := runes.IndexRune(tag, '\n'); i >= 0 {
-				tag = tag[:i]
-			}
-			sb.WriteString(string(tag))
-			sb.WriteString("\n")
+	for _, w := range row.col.w {
+		// only show the currently active window of a set
+		if w.body.file.curtext != &w.body {
+			continue
 		}
+		sb.WriteString(w.CtlPrint(false))
+		m := min(BUFSIZE/utf8.UTFMax, w.tag.Nc())
+		tag := make([]rune, m)
+		w.tag.file.b.Read(0, tag)
+
+		// We only include first line of a multi-line tag
+		if i := runes.IndexRune(tag, '\n'); i >= 0 {
+			tag = tag[:i]
+		}
+		sb.WriteString(string(tag))
+		sb.WriteString("\n")
 	}
 	row.lk.Unlock()
 

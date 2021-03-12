@@ -528,14 +528,12 @@ func expand(t *Text, q0 int, q1 int) (*Expand, bool) {
 func lookfile(s string) *Window {
 	// avoid terminal slash on directories
 	s = strings.TrimRight(s, "/")
-	for _, c := range row.col {
-		for _, w := range c.w {
-			k := strings.TrimRight(w.body.file.name, "/")
-			if k == s {
-				w = w.body.file.curtext.w
-				if w.col != nil { // protect against race deleting w
-					return w
-				}
+	for _, w := range row.col.w {
+		k := strings.TrimRight(w.body.file.name, "/")
+		if k == s {
+			w = w.body.file.curtext.w
+			if w.col != nil { // protect against race deleting w
+				return w
 			}
 		}
 	}

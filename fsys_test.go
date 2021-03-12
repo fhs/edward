@@ -792,11 +792,9 @@ func TestFileServerAttach(t *testing.T) {
 func TestFileServerWalk(t *testing.T) {
 	WinID = 0
 	row = Row{
-		col: []*Column{
-			{
-				w: []*Window{
-					NewWindow().initHeadless(nil),
-				},
+		col: Column{
+			w: []*Window{
+				NewWindow().initHeadless(nil),
 			},
 		},
 	}
@@ -1043,7 +1041,7 @@ func TestFileServerWalk(t *testing.T) {
 					Path: QID(1, Qdir),
 					Type: plan9.QTDIR,
 				}
-				x.f.w = row.col[0].w[0]
+				x.f.w = row.col.w[0]
 				return nil
 			},
 			plan9.Fcall{
@@ -1254,13 +1252,11 @@ func TestFileServerReadQacme(t *testing.T) {
 func TestFileServerRead(t *testing.T) {
 	useFixedClock = true
 	WinID = 0
-	row.col = []*Column{
-		{
-			w: []*Window{
-				NewWindow().initHeadless(nil),
-				NewWindow().initHeadless(nil),
-				NewWindow().initHeadless(nil),
-			},
+	row.col = Column{
+		w: []*Window{
+			NewWindow().initHeadless(nil),
+			NewWindow().initHeadless(nil),
+			NewWindow().initHeadless(nil),
 		},
 	}
 	defer func() {

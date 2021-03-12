@@ -39,15 +39,11 @@ func MakeWindowScaffold(content *dumpfile.Content) {
 	display := edwoodtest.NewDisplay()
 	seq = 0
 
-	row = Row{}
-
-	cols := make([]*Column, 0, len(content.Columns))
-	for range content.Columns {
-		col := &Column{
+	row = Row{
+		col: Column{
 			fortest: true,
 			w:       make([]*Window, 0),
-		}
-		cols = append(cols, col)
+		},
 	}
 
 	for _, serwin := range content.Windows {
@@ -59,14 +55,13 @@ func MakeWindowScaffold(content *dumpfile.Content) {
 		w.body.w = w
 		w.tag.w = w
 
-		wincol := cols[serwin.Column]
+		wincol := &row.col
 		wincol.w = append(wincol.w, w)
 		w.col = wincol
 		w.body.col = wincol
 		w.tag.col = wincol
 	}
 
-	row.col = cols
 	configureGlobals()
 }
 

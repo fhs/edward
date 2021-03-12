@@ -26,12 +26,10 @@ func TestXCmdPipeMultipleWindows(t *testing.T) {
 		return w
 	}
 	row = Row{
-		col: []*Column{
-			{
-				w: []*Window{
-					newWindow("one.txt"),
-					newWindow("two.txt"),
-				},
+		col: Column{
+			w: []*Window{
+				newWindow("one.txt"),
+				newWindow("two.txt"),
 			},
 		},
 	}

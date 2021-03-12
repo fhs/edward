@@ -531,10 +531,8 @@ func (fs *fileServer) read(x *Xfid, f *Fid) *Xfid {
 		var ids []int // for window sub-directories
 		if id == 0 {
 			row.lk.Lock()
-			for _, c := range row.col {
-				for _, w := range c.w {
-					ids = append(ids, w.id)
-				}
+			for _, w := range row.col.w {
+				ids = append(ids, w.id)
 			}
 			row.lk.Unlock()
 			sort.Ints(ids)

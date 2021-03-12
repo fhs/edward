@@ -128,10 +128,8 @@ func TestXfidflush(t *testing.T) {
 	w1.body.file = NewFile("")
 	w2 := NewWindow().initHeadless(nil)
 	w2.body.file = NewFile("")
-	row.col = []*Column{
-		{
-			w: []*Window{w1, w2},
-		},
+	row.col = Column{
+		w: []*Window{w1, w2},
 	}
 	x := &Xfid{
 		fs:      mr,

@@ -215,18 +215,9 @@ func checkDump(t *testing.T, got, want *dumpfile.Content) {
 }
 
 func TestRowDumpError(t *testing.T) {
-	var r Row
-
-	err := r.Dump("")
-	if err != nil {
-		t.Errorf("Row.Dump returned error %v; want nil", err)
-	}
-
 	home = ""
-	r = Row{
-		col: make([]*Column, 2),
-	}
-	err = r.Dump("")
+	r := Row{}
+	err := r.Dump("")
 	want := "can't find file for dump: can't find home directory"
 	if err == nil || err.Error() != want {
 		t.Errorf("Row.Dump returned error %q; want %q", err, want)
@@ -401,10 +392,8 @@ func windows(fsys *client.Fsys) ([]winInfo, error) {
 func TestRowLookupWin(t *testing.T) {
 	w42 := &Window{id: 42}
 	row := &Row{
-		col: []*Column{
-			{
-				w: []*Window{w42},
-			},
+		col: Column{
+			w: []*Window{w42},
 		},
 	}
 	for _, tc := range []struct {

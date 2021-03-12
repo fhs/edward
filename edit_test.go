@@ -172,7 +172,7 @@ func makeSkeletonWindowModel(dot Range, filename string) *Window {
 		},
 	})
 
-	return row.col[0].w[0]
+	return row.col.w[0]
 }
 
 func makeTempFile(contents string) (string, func(), error) {
@@ -372,25 +372,25 @@ func TestEditMultipleWindows(t *testing.T) {
 		// TODO(rjk): Make this nicer.
 		if i == 11 || i == 12 {
 			// special setup for undo
-			InsertString(row.col[0].w[0], "hello")
+			InsertString(row.col.w[0], "hello")
 			if i == 12 {
 				// Undo the above insertion.
-				row.col[0].w[0].Undo(true)
+				row.col.w[0].Undo(true)
 			}
 		}
 
-		w := row.col[0].w[0]
+		w := row.col.w[0]
 		w.Lock('M')
 		editcmd(&w.body, []rune(test.expr))
 		w.Unlock()
 
-		if got, want := len(row.col[0].w), len(test.expected); got != want {
+		if got, want := len(row.col.w), len(test.expected); got != want {
 			t.Errorf("test %d: expected %d windows but got %d windows", i, want, got)
 			break
 		}
 
 		for j, exp := range test.expected {
-			w := row.col[0].w[j]
+			w := row.col.w[j]
 			n, _ := w.body.ReadB(0, buf[:])
 			if string(buf[:n]) != exp {
 				t.Errorf("test %d: Window %d File.b contents expected %#v\nbut got \n%#v\n", i, j, exp, string(buf[:n]))
