@@ -205,9 +205,9 @@ func (row *Row) loadhelper(win *dumpfile.Window) error {
 
 	var w *Window
 	if win.Type != dumpfile.Zerox {
-		w = c.Add(nil, nil, y)
+		w = c.Add(nil, y)
 	} else {
-		w = c.Add(nil, lookfile(subl[0]), y)
+		w = c.Add(lookfile(subl[0]), y)
 	}
 	if w == nil {
 		// Why is this not an error?

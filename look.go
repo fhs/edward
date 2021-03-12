@@ -636,7 +636,7 @@ func newx(et *Text, t *Text, argt *Text, flag1 bool, flag2 bool, arg string) {
 	s := wsre.ReplaceAllString(arg, " ")
 	filenames := strings.Split(s, " ")
 	if len(filenames) == 1 && filenames[0] == "" && et.col != nil {
-		w := et.col.Add(nil, nil, -1)
+		w := et.col.Add(nil, -1)
 		w.SetTag()
 		xfidlog(w, "new")
 		return

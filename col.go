@@ -40,7 +40,7 @@ func (c *Column) Init() *Column {
 
 // Add adds a window to the Column.
 // TODO(rjk): what are the args?
-func (c *Column) Add(w, clone *Window, y int) *Window {
+func (c *Column) Add(clone *Window, y int) *Window {
 	display, err := drawDev.NewDisplay(nil, *varfontflag, "edward", *winsize)
 	if err != nil {
 		log.Fatalf("can't open display: %v\n", err)
@@ -51,17 +51,12 @@ func (c *Column) Add(w, clone *Window, y int) *Window {
 	r := display.ScreenImage().R()
 	display.ScreenImage().Draw(r, display.White(), nil, image.Point{})
 
-	if w == nil {
-		w = NewWindow()
-		w.col = c
-		if display != nil {
-			display.ScreenImage().Draw(r, w.textcolors[frame.ColBack], nil, image.Point{})
-		}
-		w.Init(clone, r, display)
-	} else {
-		w.col = c
-		w.Resize(r, false, true)
+	w := NewWindow()
+	w.col = c
+	if display != nil {
+		display.ScreenImage().Draw(r, w.textcolors[frame.ColBack], nil, image.Point{})
 	}
+	w.Init(clone, r, display)
 	w.tag.col = c
 	w.tag.row = c.row
 	w.body.col = c
