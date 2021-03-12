@@ -196,7 +196,6 @@ func (r *Row) dump() (*dumpfile.Content, error) {
 func (row *Row) loadhelper(win *dumpfile.Window) error {
 	// Column for this window.
 	c := &row.col
-	y := -1
 
 	subl := strings.SplitN(win.Tag.Buffer, " ", 2)
 	if len(subl) != 2 {
@@ -205,9 +204,9 @@ func (row *Row) loadhelper(win *dumpfile.Window) error {
 
 	var w *Window
 	if win.Type != dumpfile.Zerox {
-		w = c.Add(nil, y)
+		w = c.Add(nil, "")
 	} else {
-		w = c.Add(lookfile(subl[0]), y)
+		w = c.Add(lookfile(subl[0]), "")
 	}
 	if w == nil {
 		// Why is this not an error?

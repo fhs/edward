@@ -11,7 +11,6 @@ import (
 	"os"
 	"os/signal"
 	"path"
-	"path/filepath"
 	"runtime"
 	"strconv"
 	"strings"
@@ -164,15 +163,7 @@ func readArgFiles(files []string) {
 }
 
 func readfile(c *Column, filename string) {
-	w := c.Add(nil, 0)
-	abspath, _ := filepath.Abs(filename)
-	w.SetName(abspath)
-	w.body.Load(0, filename, true)
-	w.body.file.Clean()
-	w.SetTag()
-	w.Resize(w.r, false, true)
-	w.body.ScrDraw(w.body.fr.GetFrameFillStatus().Nchars)
-	w.tag.SetSelect(w.tag.file.Size(), w.tag.file.Size())
+	w := c.Add(nil, filename)
 	xfidlog(w, "new")
 }
 
