@@ -206,8 +206,10 @@ func (row *Row) loadhelper(win *dumpfile.Window) error {
 	var w *Window
 	if win.Type != dumpfile.Zerox {
 		w = c.Add(nil, y)
+		defer w.HandleInput()
 	} else {
 		w = c.Add(lookfile(subl[0]), y)
+		defer w.HandleInput()
 	}
 	if w == nil {
 		// Why is this not an error?

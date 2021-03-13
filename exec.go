@@ -771,6 +771,7 @@ func zeroxx(et *Text, t *Text, _ *Text, _, _ bool, _4 string) {
 		warning(nil, "%s is a directory; Zerox illegal\n", t.file.name)
 	} else {
 		nw := t.w.col.Add(t.w, -1)
+		defer nw.HandleInput()
 		// ugly: fix locks so w.unlock works
 		// TODO(rjk): We need to handle this better.
 		nw.lock1(t.w.owner)

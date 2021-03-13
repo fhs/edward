@@ -738,3 +738,8 @@ func (w *Window) ScrlResize() {
 	}
 	w.scrtmp = m
 }
+
+func (w *Window) HandleInput() {
+	go mousethread(w)
+	go keyboardthread(w)
+}

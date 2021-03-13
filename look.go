@@ -256,6 +256,7 @@ func plumblook(m *plumb.Message) {
 func plumbshow(m *plumb.Message) {
 	// drawtopwindow(); TODO(flux): Get focus
 	w := makenewwindow(nil)
+	defer w.HandleInput()
 	name := findattr(m.Attr, "filename")
 	if name == "" {
 		nuntitled++
@@ -572,6 +573,7 @@ func openfile(t *Text, e *Expand) *Window {
 			ow = t.w
 		}
 		w = makenewwindow(t)
+		defer w.HandleInput()
 		t = &w.body
 		w.SetName(e.name)
 		t.Load(0, e.name, true)
@@ -631,6 +633,7 @@ func newx(et *Text, t *Text, argt *Text, flag1 bool, flag2 bool, arg string) {
 	filenames := strings.Split(s, " ")
 	if len(filenames) == 1 && filenames[0] == "" && et.col != nil {
 		w := et.col.Add(nil, -1)
+		defer w.HandleInput()
 		w.SetTag()
 		xfidlog(w, "new")
 		return

@@ -125,6 +125,7 @@ func errorwin1(dir string, incl []string) *Window {
 	w := lookfile(r)
 	if w == nil {
 		w = row.col.Add(nil, -1)
+		defer w.HandleInput()
 		w.filemenu = false
 		w.SetName(r)
 		xfidlog(w, "new")

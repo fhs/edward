@@ -65,8 +65,6 @@ func (c *Column) Add(clone *Window, y int) *Window {
 	w.keyboardctl = display.InitKeyboard()
 	w.mousectl = display.InitMouse()
 	w.mouse = &w.mousectl.Mouse
-	go mousethread(w)
-	go keyboardthread(w)
 
 	c.w = append(c.w, w)
 	c.safe = true

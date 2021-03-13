@@ -165,6 +165,7 @@ func readArgFiles(files []string) {
 
 func readfile(c *Column, filename string) {
 	w := c.Add(nil, 0)
+	defer w.HandleInput()
 	abspath, _ := filepath.Abs(filename)
 	w.SetName(abspath)
 	w.body.Load(0, filename, true)
@@ -592,6 +593,7 @@ func newwindowthread() {
 		<-cnewwindow
 		w = makenewwindow(nil)
 		w.SetTag()
+		w.HandleInput()
 		xfidlog(w, "new")
 		cnewwindow <- w
 	}
