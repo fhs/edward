@@ -259,7 +259,7 @@ func mousethread(w *Window) {
 		case _, ok = <-w.mousectl.Resize:
 			if !ok {
 				// User closed the window from window manager.
-				close(w.done)
+				w.Shutdown()
 				return
 			}
 			if err := display.Attach(draw.Refnone); err != nil {
@@ -275,7 +275,7 @@ func mousethread(w *Window) {
 		case w.mousectl.Mouse, ok = <-w.mousectl.C:
 			if !ok {
 				// User closed the window from window manager.
-				close(w.done)
+				w.Shutdown()
 				return
 			}
 			m := &w.mousectl.Mouse
@@ -441,7 +441,7 @@ func keyboardthread(w *Window) {
 		case r, ok := <-keyboardctl.C:
 			if !ok {
 				// User closed the window from window manager.
-				close(w.done)
+				w.Shutdown()
 				return
 			}
 			for {
