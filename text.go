@@ -1170,7 +1170,6 @@ func (t *Text) Select() {
 				}
 			}
 			t.ScrDraw(t.fr.GetFrameFillStatus().Nchars)
-			clearmouse()
 		}
 		t.display.Flush()
 		for t.w.mouse.Buttons == b {

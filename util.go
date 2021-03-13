@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"image"
 	"log"
 	"path/filepath"
 	"strings"
@@ -40,29 +39,6 @@ func abs(x int) int {
 
 func acmeerror(s string, err error) {
 	log.Panicf("acme: %s: %v\n", s, err)
-}
-
-var (
-	prevmouse image.Point
-	mousew    *Window
-)
-
-func clearmouse() {
-	mousew = nil
-}
-
-func savemouse(w *Window) {
-	prevmouse = w.mouse.Point
-	mousew = w
-}
-
-func restoremouse(w *Window) bool {
-	defer func() { mousew = nil }()
-	if mousew != nil && mousew == w {
-		w.display.MoveTo(prevmouse)
-		return true
-	}
-	return false
 }
 
 func bytetorune(s []byte) []rune {

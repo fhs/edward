@@ -28,7 +28,6 @@ func (row *Row) Init(dump *dumpfile.Content, loadfile string) *Row {
 	c := &row.col
 	c.Init()
 	c.row = row
-	clearmouse()
 
 	if loadfile == "" || row.Load(dump, loadfile) != nil {
 		readArgFiles(flag.Args())
@@ -41,7 +40,6 @@ func (row *Row) Type(w *Window, r rune, p image.Point) *Text {
 		r = utf8.RuneError
 	}
 
-	clearmouse()
 	row.lk.Lock()
 	var t *Text
 	if *barflag {

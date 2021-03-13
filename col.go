@@ -68,7 +68,6 @@ func (c *Column) Add(clone *Window, y int) *Window {
 
 	c.w = append(c.w, w)
 	c.safe = true
-	savemouse(w)
 	if display != nil {
 		display.MoveTo(w.tag.scrollr.Max.Add(image.Pt(3, 3)))
 	}
@@ -89,7 +88,6 @@ Found:
 	w.tag.col = nil
 	w.body.col = nil
 	w.col = nil
-	didmouse := restoremouse(w)
 	if dofree {
 		w.Delete()
 		w.Close()
@@ -105,13 +103,9 @@ Found:
 		up = true
 		w = c.w[i]
 	}
-	if c.safe && !c.fortest {
-		if !didmouse && up {
-			w.showdel = true
-		}
-		if !didmouse && up {
-			w.moveToDel()
-		}
+	if c.safe && !c.fortest && up {
+		w.showdel = true
+		w.moveToDel()
 	}
 }
 
@@ -119,7 +113,6 @@ func (c *Column) CloseAll() {
 	for _, w := range c.w {
 		w.Close()
 	}
-	clearmouse()
 }
 
 func (c *Column) MouseBut() {

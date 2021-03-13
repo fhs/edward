@@ -269,7 +269,6 @@ func mousethread(w *Window) {
 			iconinit(display, &w.iconImages, w.fontget)
 			w.ScrlResize()
 			{
-				clearmouse()
 				w.maxlines = 0
 				w.Resize(display.ScreenImage().R(), false, true)
 			}
