@@ -541,15 +541,7 @@ func lookfile(s string) *Window {
 }
 
 func openfile(t *Text, e *Expand) *Window {
-	var (
-		r     Range
-		w, ow *Window
-		eval  bool
-		rs    string
-	)
-
-	r.q0 = 0
-	r.q1 = 0
+	var w *Window
 	if e.name == "" {
 		w = t.w
 		if w == nil {
@@ -567,7 +559,7 @@ func openfile(t *Text, e *Expand) *Window {
 			// Make the name a full path, just like we would if
 			// opening via the plumber.
 			rp := filepath.Join(wdir, e.name)
-			rs = string(cleanrname([]rune(rp)))
+			rs := string(cleanrname([]rune(rp)))
 			e.name = rs
 			w = lookfile(e.name)
 		}
@@ -575,7 +567,7 @@ func openfile(t *Text, e *Expand) *Window {
 	if w != nil {
 		t = &w.body
 	} else {
-		ow = nil
+		var ow *Window
 		if t != nil {
 			ow = t.w
 		}
@@ -596,6 +588,8 @@ func openfile(t *Text, e *Expand) *Window {
 		}
 		xfidlog(w, "new")
 	}
+	var eval bool
+	var r Range
 	if e.a1 == e.a0 {
 		eval = false
 	} else {
