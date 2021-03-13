@@ -3,7 +3,6 @@ package main
 import (
 	"image"
 	"log"
-	"path/filepath"
 
 	"github.com/fhs/edward/internal/draw"
 	"github.com/fhs/edward/internal/frame"
@@ -40,8 +39,8 @@ func (c *Column) Init() *Column {
 }
 
 // Add adds a window to the Column.
-// If filename is not empty, it is loaded in the window.
-func (c *Column) Add(clone *Window, filename string) *Window {
+// TODO(rjk): what are the args?
+func (c *Column) Add(clone *Window, y int) *Window {
 	display, err := drawDev.NewDisplay(nil, *varfontflag, "edward", *winsize)
 	if err != nil {
 		log.Fatalf("can't open display: %v\n", err)
@@ -66,26 +65,15 @@ func (c *Column) Add(clone *Window, filename string) *Window {
 	w.keyboardctl = display.InitKeyboard()
 	w.mousectl = display.InitMouse()
 	w.mouse = &w.mousectl.Mouse
-
-	if filename != "" {
-		abspath, _ := filepath.Abs(filename)
-		w.SetName(abspath)
-		w.body.Load(0, filename, true)
-		w.body.file.Clean()
-		w.SetTag()
-		w.Resize(w.r, false, true)
-		w.body.ScrDraw(w.body.fr.GetFrameFillStatus().Nchars)
-		w.tag.SetSelect(w.tag.file.Size(), w.tag.file.Size())
-	}
-	savemouse(w)
-	if display != nil {
-		display.MoveTo(w.tag.scrollr.Max.Add(image.Pt(3, 3)))
-	}
 	go mousethread(w)
 	go keyboardthread(w)
 
 	c.w = append(c.w, w)
 	c.safe = true
+	savemouse(w)
+	if display != nil {
+		display.MoveTo(w.tag.scrollr.Max.Add(image.Pt(3, 3)))
+	}
 	barttext = &w.body
 	return w
 }

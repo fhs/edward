@@ -124,7 +124,7 @@ func errorwin1(dir string, incl []string) *Window {
 	r := errorwin1Name(dir)
 	w := lookfile(r)
 	if w == nil {
-		w = row.col.Add(nil, "")
+		w = row.col.Add(nil, -1)
 		w.filemenu = false
 		w.SetName(r)
 		xfidlog(w, "new")
@@ -184,7 +184,7 @@ func errorwinforwin(w *Window) *Window {
 }
 
 func makenewwindow(t *Text) *Window {
-	return row.col.Add(nil, "")
+	return row.col.Add(nil, -1)
 }
 
 type Warning struct {
