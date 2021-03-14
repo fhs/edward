@@ -242,6 +242,14 @@ func ismtpt(filename string) bool {
 	return strings.HasPrefix(s, m) && (m[len(m)-1] == '/' || len(s) == len(m) || s[len(m)] == '/')
 }
 
+func lockAndCloseWindow(w *Window) {
+	row.lk.Lock()
+	defer row.lk.Unlock()
+	if w.col != nil {
+		w.col.Close(w, true)
+	}
+}
+
 func mousethread(w *Window) {
 	// TODO(rjk): Do we need this?
 	runtime.LockOSThread()
@@ -259,7 +267,7 @@ func mousethread(w *Window) {
 		case _, ok = <-w.mousectl.Resize:
 			if !ok {
 				// User closed the window from window manager.
-				w.Shutdown()
+				lockAndCloseWindow(w)
 				return
 			}
 			if err := display.Attach(draw.Refnone); err != nil {
@@ -275,7 +283,7 @@ func mousethread(w *Window) {
 		case w.mousectl.Mouse, ok = <-w.mousectl.C:
 			if !ok {
 				// User closed the window from window manager.
-				w.Shutdown()
+				lockAndCloseWindow(w)
 				return
 			}
 			m := &w.mousectl.Mouse
@@ -441,7 +449,7 @@ func keyboardthread(w *Window) {
 		case r, ok := <-keyboardctl.C:
 			if !ok {
 				// User closed the window from window manager.
-				w.Shutdown()
+				lockAndCloseWindow(w)
 				return
 			}
 			for {

@@ -57,7 +57,6 @@ type Window struct {
 	editoutlk   chan bool
 
 	done        chan struct{} // we close this when the window is closing
-	doneOnce    sync.Once     // ugly but we use this to avoid double close of done
 	keyboardctl *draw.Keyboardctl
 	mousectl    *draw.Mousectl
 	mouse       *draw.Mouse // == &mousectl.Mouse
@@ -385,7 +384,7 @@ func (w *Window) MouseBut() {
 func (w *Window) Close() {
 	if w.ref.Dec() == 0 {
 		// Ask mousethread and keyboardthread to finish up.
-		w.Shutdown()
+		close(w.done)
 
 		xfidlog(w, "del")
 		//		w.DirFree()
@@ -743,11 +742,4 @@ func (w *Window) ScrlResize() {
 func (w *Window) HandleInput() {
 	go mousethread(w)
 	go keyboardthread(w)
-}
-
-// Shutdown shuts down mousethread and keyboardthread in a safe way.
-func (w *Window) Shutdown() {
-	w.doneOnce.Do(func() {
-		close(w.done)
-	})
 }
