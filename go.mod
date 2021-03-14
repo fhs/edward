@@ -20,4 +20,4 @@ require (
 	golang.org/x/sys v0.0.0-20190219092855-153ac476189d // indirect
 )
 
-replace 9fans.net/go => github.com/fhs/9fans-go v0.0.3-0.20210309021124-923413744eab
+replace 9fans.net/go => github.com/fhs/9fans-go v0.0.3-0.20210314005303-4f98872b322a
